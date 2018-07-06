@@ -1,0 +1,8 @@
+# in this case, only precompiled instances will be used, no code generation
+# or compilation takes place - this is intended for production verification
+# to make sure everything is appropriately prepared
+
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.DoGeneration=false
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.DoCompilation=false
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.TryToLoadAsResource=true
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.UseExistingResourceUnconditionally=true

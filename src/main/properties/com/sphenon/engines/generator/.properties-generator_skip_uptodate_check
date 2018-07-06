@@ -1,0 +1,7 @@
+# we allow compilation of missing precompiled COCPs, but use precompiled
+# COCPs as resources unconditionally if they exist, i.e. no modification check
+
+# com.sphenon.engines.generator.classes.DynamicGeneratorClass.DoGeneration=false
+# com.sphenon.engines.generator.classes.DynamicGeneratorClass.DoCompilation=false
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.TryToLoadAsResource=true
+com.sphenon.engines.generator.classes.DynamicGeneratorClass.UseExistingResourceUnconditionally=true
