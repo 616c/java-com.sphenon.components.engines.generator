@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -284,6 +284,7 @@ public class Class_Template implements Template {
             }
             osw.write("rebuildNodes(context);\n");
             osw.write("rebuildPathes(context);\n");
+            osw.write("File created_file = null;\n");
             processNode(context, folder, folder, osw, false);
             osw.write("»\n");
             osw.close();
@@ -341,6 +342,16 @@ public class Class_Template implements Template {
         String  node_id = node.getId(context);
         boolean is_leaf = (node instanceof TreeLeaf);
         boolean is_link = (is_leaf && node.getId(context).matches(".*\\.LINK(?:-[0-9]+)"));
+        String symlink_target = node.optionallyGetLinkTarget(context);
+        boolean is_symlink = (symlink_target != null ? true : false);
+        boolean is_symlink_in_file = false;
+
+        if (is_leaf && node.getId(context).matches(".*\\.SYMBOLIC_LINK")) {
+            Vector<String> sllines = com.sphenon.basics.graph.NodeUtilities.tryReadLeaf(context, (TreeLeaf) node);
+            symlink_target = sllines.get(0);
+            is_symlink = true;
+            is_symlink_in_file = true;
+        }
 
         TreeNode linked_node = null;
         if (is_link) {
@@ -362,6 +373,7 @@ public class Class_Template implements Template {
 
         TreeNode before;
         TreeNode after;
+        TreeNode permissions;
 
         before = node.tryGetParent(context).tryGetChild(context, node_id + ".BEFORE");
         if (before != null && before instanceof TreeLeaf) {
@@ -379,34 +391,50 @@ public class Class_Template implements Template {
             osw.write("pushTargetId(context, \"" + prepareId(context, node_id, is_leaf) + "\");\n");
         }
 
+        osw.write("{ created_file = null;\n");
         if (is_link) {
             processNode(context, linked_node, root, osw, true);
         } else if (is_leaf) {
-            osw.write("createFile(context, local_arguments);\n");
+            if (is_symlink) {
+                osw.write("created_file = createSymbolicLink(context, \"" + prepareId(context, symlink_target, is_leaf) + "\", " + (is_symlink_in_file ? "true" : "false") + ");\n");
+            } else {
+                osw.write("created_file = createFile(context, local_arguments);\n");
+            }
         } else {
             if (node_id.matches("CVS|\\.svn") == false) {
                 before = node.tryGetChild(context, ".BEFORE");
                 if (before != null && before instanceof TreeLeaf) {
                     copyLeaf(context, (TreeLeaf) before, osw);
                 }
-                osw.write("createFolder(context);\n");
-                if (node.getChilds(context) != null) {
-                    for (TreeNode child_node : node.getChilds(context).getIterable_TreeNode_(context)) {
-                        if (    child_node.getId(context).matches(".*\\.(IGNORE)") == false
-                             && (
-                                     (child_node instanceof TreeLeaf) == false
-                                  || (    child_node.getId(context).matches(".*\\.(BEFORE|AFTER)")
-                                       || (    child_node.getId(context).matches(".*\\.(TYPE)")
-                                            && node == root
-                                          )
-                                     ) == false
-                                )
-                           ) {
-                            osw.write("pushSourceId(context, \"" + Encoding.recode(context, child_node.getId(context), Encoding.UTF8, Encoding.JAVA) + "\");\n");
-                            processNode(context, child_node, root, osw, false);
-                            osw.write("popSourceId(context);\n");
-                        }
+                if (is_symlink) {
+                    osw.write("created_file = createSymbolicLink(context, \"" + prepareId(context, symlink_target, is_leaf) + "\", " + (is_symlink_in_file ? "true" : "false") + ");\n");
+                } else {
+                    osw.write("created_file = createFolder(context);\n");
+                    if (node.getChilds(context) != null) {
+                        for (TreeNode child_node : node.getChilds(context).getIterable_TreeNode_(context)) {
+                            if (    child_node.getId(context).matches(".*\\.(IGNORE)") == false
+                                 && (
+                                         (child_node instanceof TreeLeaf) == false
+                                      || (    child_node.getId(context).matches(".*\\.(BEFORE|AFTER|PERMISSIONS)")
+                                           || (    child_node.getId(context).matches(".*\\.(TYPE)")
+                                                && node == root
+                                              )
+                                         ) == false
+                                    )
+                               ) {
+                                osw.write("pushSourceId(context, \"" + Encoding.recode(context, child_node.getId(context), Encoding.UTF8, Encoding.JAVA) + "\");\n");
+                                processNode(context, child_node, root, osw, false);
+                                osw.write("popSourceId(context);\n");
+                            }
 
+                        }
+                    }
+                }
+                permissions = node.tryGetChild(context, ".PERMISSIONS");
+                if (permissions != null && permissions instanceof TreeLeaf) {
+                    Vector<String> pv = NodeUtilities.tryReadLeaf(context, (TreeLeaf) permissions);
+                    if (pv != null && pv.size() >= 1) {
+                        osw.write("setPermissions(context, created_file, \"" + pv.get(0) + "\");\n");
                     }
                 }
                 after = node.tryGetChild(context, ".AFTER");
@@ -415,6 +443,14 @@ public class Class_Template implements Template {
                 }
             }
         }
+        permissions = node.tryGetParent(context).tryGetChild(context, node_id + ".PERMISSIONS");
+        if (permissions != null && permissions instanceof TreeLeaf) {
+            Vector<String> pv = NodeUtilities.tryReadLeaf(context, (TreeLeaf) permissions);
+            if (pv != null && pv.size() >= 1) {
+                osw.write("setPermissions(context, created_file, \"" + pv.get(0) + "\");\n");
+            }
+        }
+        osw.write("}\n");
 
         if (tp) {
             osw.write("popTargetId(context);\n");

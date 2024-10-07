@@ -1,0 +1,57 @@
+G-2.0-plain_java-1.0
+⊰
+   This example explains how the parser configuration works.
+   It can be safely skipped on a first reading.
+
+   In the previous example template types were introduced. How do they affect
+   the generation process?
+
+   When interpreting a template, the first information read is the
+   introductory string:
+
+     G-2.0-plain_java-1.0
+
+   This is translated straight forward to the name of a template parser
+   configuration by replacing the "G" with "TP":
+
+     TP-2.0-plain_java-1.0
+
+   The parsers are very modularized and consist of several exchangable
+   building blocks. A parser configuration is a construction plan for a
+   specific parser, made of such components.
+
+   To build the parsers, Object Construction Plans (OCPs) are used. For
+   details on OCPs, please refer to <http://www.xocp.org>. Specifically, the
+   parser configurations are placed in the ocp package:
+
+     com/sphenon/engines/generator/parsers
+
+   Putting the pieces together, the above parser configuration is found in
+   a file in the ocp path at:
+
+     com/sphenon/engines/generator/parsers/TP-2.0-plain_java-1.0.ocp
+
+   In our example, it contains the following plan:
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <parser CLASS="TemplateParser" xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+        <TOMParser>
+          <BeginHandler OID="mth" CLASS="TCHMain">
+            <SourceHandler CLASS="TCHCompactUnicodeSyntax2ASCII">
+              <ASCIISourceHandler CLASS="TCHLanguageDispatcher">
+                <TextHandler CLASS="TCHText"/>
+                <JavaCodeHandler CLASS="TCHJavaCode"/>
+                <JavaExpressionHandler CLASS="TCHJavaExpression"/>
+                <TemplateCommentHandler CLASS="TCHTemplateComment"/>
+                <TemplateCodeHandler CLASS="TCHTemplateCode"/>
+                <TagHandler CLASS="TCHTag"/>
+                <PPTagHandler CLASS="TCHPPTag"/>
+              </ASCIISourceHandler>
+            </SourceHandler>
+          </BeginHandler>
+          <SourceHandler OIDREF="mth"/>
+          <EndHandler OIDREF="mth"/>
+        </TOMParser>
+      </parser>
+
+⊱…

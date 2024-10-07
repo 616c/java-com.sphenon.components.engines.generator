@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.tchandler.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -65,13 +65,26 @@ public class TCHTag implements TCHandler {
         return current_node;
     }
 
-    public TOMNode handleInvocation(CallContext context, TCEvent event, TOMNode current_node, String tag_name, Vector arguments, boolean is_start) throws InvalidTemplateSyntax {
+    public TOMNode handleInvocation(CallContext context, TCEvent event, TOMNode current_node, String tag_name, Vector arguments, boolean is_start, Vector recoding) throws InvalidTemplateSyntax {
+        TOMNode save_node = null;
+        if (recoding != null && recoding.size() != 0) {
+            save_node = current_node;
+            current_node = new TOMPlain(context, current_node);
+
+            current_node.getProperties(context).setRecoding(context, new Recoding(context, (Vector<String[]>) recoding));
+        }
+
         TagHandler th = current_node.getRootNode(context).getTagHandler(context, tag_name);
         if (is_start) {
             th.handleTagBegin(context, event, current_node, tag_name, (Vector<String>) arguments, this.ascii_source_handler, null);
         } else {
             th.handleTagEnd(context, event, current_node, tag_name, (Vector<String>) arguments, this.ascii_source_handler, null);
         }
+
+        if (save_node != null) {
+            current_node = save_node;
+        }
+
         return current_node;
     }
 

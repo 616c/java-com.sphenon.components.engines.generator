@@ -1,7 +1,7 @@
 package com.sphenon.basics.data;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -56,11 +56,19 @@ public class Data_MediaObject_Generator implements Data_MediaObject {
     protected Object[]             arguments;
     protected TypeImpl_MediaObject target_type;
     protected String               disposition_filename;
+    protected String               encoding;
 
-    public Data_MediaObject_Generator (CallContext context, String template, String disposition_filename, Object... arguments) {
+    public Data_MediaObject_Generator (CallContext context, String template, String disposition_filename, TypeImpl_MediaObject target_type, Object... arguments) {
         this.template                  = template;
         this.arguments                 = arguments;
         this.target_type               = target_type;
+        this.disposition_filename      = disposition_filename;
+    }
+
+    public Data_MediaObject_Generator (CallContext context, String template, String disposition_filename, String target_type_mime, Object... arguments) {
+        this.template                  = template;
+        this.arguments                 = arguments;
+        this.target_type               = (TypeImpl_MediaObject) TypeManager.getMediaTypeMIME(context, target_type_mime);
         this.disposition_filename      = disposition_filename;
     }
 
@@ -79,6 +87,22 @@ public class Data_MediaObject_Generator implements Data_MediaObject {
     public void setDispositionFilename (CallContext context, String disposition_filename) {
         this.disposition_filename = disposition_filename;
         this.target_type = null;
+    }
+
+    public Object[] getArguments (CallContext context) {
+        return this.arguments;
+    }
+
+    public void setArguments (CallContext context, Object[] arguments) {
+        this.arguments = arguments;
+    }
+
+    public String getEncoding(CallContext context) {
+        return this.encoding;
+    }
+
+    public void setEncoding(CallContext context, String encoding) {
+        this.encoding = encoding;
     }
 
     public Type getDataType(CallContext context) {
@@ -115,6 +139,18 @@ public class Data_MediaObject_Generator implements Data_MediaObject {
             - dann entsprechend nach File rausschreiben und DMO für File rausgeben
 
          *******************************************************************************/
+        // bzw. siehe auch:
+        /* [Issue:FasterStreaming - RESTService.java,Data_MediaObject_Generator.java,EMOSServiceConnector.java] */
+        /* In EMOSServiceConnector.java nun gelöst!
+           Hier auch einbauen (utility classes PipedStreamConnector/PipedStreamWorker)
+
+           Doof ist hier das Zwischenspeichern; die schönste Lösung wäre wohl
+           eine generelle Utility-Klasse, die optional (je nach erwartbarer
+           Datenmenge) mit zwei Threads und einem konfigurierbar großen
+           Buffer arbeitet, und den working thread automatisch abräumt
+           wenn der Stream geclosed oder destroyed wird; ggf. diese Klasse
+           direkt als InputStream gewrapped (abgeleitet, zzgl. ManagedResource.java
+           interface), damit das dann nur noch daran hängt */
 
         String result = null;
         byte[] binary = null;

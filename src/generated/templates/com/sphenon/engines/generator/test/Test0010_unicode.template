@@ -1,0 +1,138 @@
+G-2.0-test_unicode-1.0 -*- coding: utf-8; -*-
+
+Test Template: Unicode Compact Syntax
+----------------------------------------------------------------------------------
+
+The compact unicode syntax is a simple 1:1-replacement for multi-character
+ASCII tokens with single Unicode-Characters. It's use is purely optional
+and serves as "syntactic sugar".
+
+« java code »                      <%   java code                   %>
+⊰ Kommentar ⊱                      <%-- comment                   --%>
+◂ print code ▸                     <%=  print code                  %>
+◂ print code ⌘encoding▸            <%=  print code     %% encoding  %>
+▼ file level code (import) ▼       <%@  file level code             %>
+▲ class level code (declaration) ▲ <%!  class level code            %>
+⊏ template code ⊐                  <%?  template code              ?%>
+⊏ signature(...) ⊐                  <%?  signature(...)              ?%>
+◂‖"Ⓧ/./path/expression"▸            <%=  ::"XPath/./path/expression"  %>
+◂‖"Ⓧ/./path/expression"⌘xml/html▸  <%=  ::"XPath/./path/expression"%%xml /html %>
+◂‖"Ⓕ/./folder/file.txt"▸            <%=  ::"File/./folder/file.txt"   %>
+◂‖"Ⓟ/Name"▸                        <%=  ::"Property/Name"            %>
+◂‖"Ⓢ/select * from t"▸              <%=  ::"SQL/select * from t"      %>
+◂ ‖"XPath/./name1/name2" ▸        <%=  ::"XPath/./name1/name2"      %>
+◂ ‖{XPath/./name1/name2} ▸        <%=  ::{XPath/./name1/name2}      %>
+◂ ‖{XPath/./name1/name2}⌘xml ▸    <%=  ::{XPath/./name1/name2}%%xml %>
+
+◂ ‖"xpath:./escaping%test%%test%>test" ▸ <%=  ::"xpath:./escaping%test\%\%test\%\>test" %>
+≤Hans≥                             <-Hans->
+
+Ⓡ ~~~regexp=replacement
+
+
+hmm...
+⋖ tag ...   ⋗                      <tag                             />    xml-style
+                                   <§tag                            §>    para-style
+⋖ tag ... { ⋗                      <tag                              >
+                                   <§tag                          { §>
+⋖ tag ... att { ⋗                  <tag                              ><att>
+                                   <§tag                       att{ §>
+⋖ } ⋗                              </tag> oder
+                                   </att></tag>
+                                   <§ }                             §>
+⋖ } att2 { ⋗                       <att2> oder
+                                   </att><att2>
+                                   <§ } att2 { §>
+
+
+⏎                                  \n
+
+line …
+contin\
+uation
+
+      ⋮ template only indentation
+    <%| template only indentation
+
+∀(‖"Ⓧ/./path/expression")  -->  @for( ::./)  --> for(<TypDefault> <var_default> : new <TypDefault>Iterable(context, ...)) {
+/∀                       -->  @endfor      --> }
+⊏ current: XML = (XMLNode xml_node) ⊐
+⊏ current: XML ⊐
+
+∀                                  foreach 
+/∀                                 endforeach 
+➜                                  insert 
+Ⓣ                                  template 
+/Ⓣ                                 endtemplate 
+∃                                  exists 
+/∃                                 endexists 
+⁇                                  isvalid
+/⁇                                 endisvalid
+⊙                                  current
+Ⓘ                                  index
+∪                                  union
+✉                                  message 
+✏                                  doclet
+⊕                                  add
+⊖                                  remove
+⊛                                  create
+⇾                                  isa (is an instance of)
+¶                                  push/pop indent
+●                                  select
+∨                                  else
+
+
+UCS and UTF-8 hex character codes
+---------------------------------
+
+        ⑊ 244A E2918A
+        ⌘ 2318 E28C98                               S-AltGr-r
+        « 00AB C2AB         » 00BB C2BB             AltGr-y      AltGr-x
+        ⊰ 22B0 E28AB0       ⊱ 22B1 E28AB1           S-AltGr-1    S-AltGr-2
+        ◂ 25C2 E29782       ▸ 25B8 E296B8           AltGr-1      AltGr-2
+        ▲ 25B2 E296B2       ▲                       AltGr-3      AltGr-3
+        ▼ 25BC E296BC       ▼                       AltGr-4      AltGr-4
+        ⊏ 228F E28A8F       ⊐ 2290 E28A90           AltGr-5      AltGr-6
+        ⋖ 22D6 E28B96       ⋗ 22D7 E28B97           S-AltGr-3    S-AltGr-4
+        NOT USED ANYMORE: ⋜ 22DC E28B9C       ⋝ 22DD E28B9D
+        ≤ 2264 E289A4       ≥ 2265 E289A5           S-AltGr-5    S-AltGr-6
+        ≦ 2266 E289A6       ≧ 2267 E289A7           S-AltGr-7    S-AltGr-8
+       Ⓧ" 24CD E2938D       "
+       Ⓕ" 24BB E292BB       "
+       Ⓢ" 24C8 E29388       "
+       Ⓣ" 24C9 E29389       "
+       Ⓟ" 24C5 E29385       "
+        ✦ 2726 E29CA6       XModel
+       ‖" 2016 E28096       "                       C-AltGr-|    C-AltGr-|
+        … 2026 E280A6
+        ⋮ 22EE E28BAE
+        ✉ 2709 E29C89
+        ✏ 270F E29C8F 
+        ⚒ 2692 E29A92
+        ∀ 2200 E28880
+        ∃ 2203 E28883
+        ⁇ 2047 E28187
+        ● 25CF E2978F
+        ∪ 222A E288AA
+        ➜ 279C E29E9C
+        ⊕ 2295 E28A95
+        ⊖ 2296 E28A96
+        ⊛ 229B E28A9B
+        ➀ 2780 E29E80
+        ⓝ 24DD E2939D
+       Ⓞ" 24C4 E29384       "
+        ∅ 2205 E28885
+        ¬ 00AC C2AC
+        ⊙ 2299 E28A99
+        Ⓘ 24BE E292BE
+        Ⓡ 24C7 E29387
+        ⇒ 21D2 E28792
+        ⇾ 21FE E287BE
+        ⫷ 2AF7 E2ABB7       ⫸ 2AF8 E2ABB8
+        ¶ 00B6 B6
+        ∨ 2228 E288A8
+
+
+;; key-bindings for emacs
+;; see tpl-mode.el
+

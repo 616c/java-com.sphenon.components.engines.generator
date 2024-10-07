@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.tchandler.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -20,6 +20,7 @@ import com.sphenon.basics.exception.*;
 import com.sphenon.basics.notification.*;
 import com.sphenon.basics.customary.*;
 import com.sphenon.basics.encoding.*;
+import com.sphenon.basics.expression.*;
 import com.sphenon.basics.data.*;
 
 import com.sphenon.engines.generator.*;
@@ -172,7 +173,7 @@ public class TCHJavaPP implements TCHandler {
         }
     }
 
-    protected StringBuilder getLastBufferString (CallContext context) {
+    protected String getLastBufferString (CallContext context) {
         boolean firstp = true;
         StringBuilder result = null;
         for (StringBuilder bp : this.last_buffer_parts) {
@@ -184,10 +185,33 @@ public class TCHJavaPP implements TCHandler {
                 result.append(bp.toString());
             }
         }
-        return result;
+        return result == null ? null : result.toString();
     }
 
-    public TOMNode handleLocator (CallContext context, TCEvent event, TOMNode current_node, String locator, boolean is_delimited, String base, String cast, String dynamic_arguments) throws InvalidTemplateSyntax {
+    protected String getLastBufferString (CallContext context, int part) {
+        StringBuilder result = part < this.last_buffer_parts.size() ? this.last_buffer_parts.get(part) : null;
+        return result == null ? null : result.toString();
+    }
+
+    protected String getLastBufferString (CallContext context, int first_part, int last_part) {
+        boolean firstp = true;
+        StringBuilder result = null;
+        int i=0;
+        for (StringBuilder bp : this.last_buffer_parts) {
+            if (first_part <= i && i <= last_part) {
+                if (firstp) {
+                    result = bp;
+                    firstp = false;
+                } else {
+                    result.append(",");
+                    result.append(bp.toString());
+                }
+            }
+        }
+        return result == null ? null : result.toString();
+    }
+
+    public TOMNode handleLocator (CallContext context, TCEvent event, TOMNode current_node, String locator, boolean is_delimited, String base, String cast, String dynamic_arguments, String default_evaluators) throws InvalidTemplateSyntax {
         if (locator != null && locator.length() > (is_delimited ? 2 : 0)) {
             TOMNode start = current_node;
             if (start.getChildNodes(context).size() > 0) {
@@ -196,10 +220,12 @@ public class TCHJavaPP implements TCHandler {
             String variable = (base != null ? base : TOMTemplateLocatorTarget.getCurrentVariable(context, start));
             String locator_string = (is_delimited ? locator.substring(1,locator.length()-1) : locator);
             if (dynamic_arguments != null) {
-                if (dynamic_arguments.matches(" *") == false) {
-                    dynamic_arguments = ", " + dynamic_arguments;
-                }
-                locator_string = "\" + DynamicString.process(context, \"" + locator_string + "\", null" + dynamic_arguments + ") + \"";
+                boolean da_empty   = (dynamic_arguments.matches(" *") ? true : false);
+                locator_string = "\" + DynamicString.process(context, "
+                                                             + "\"" + locator_string + "\", "
+                                                             + (default_evaluators == null ? "(String) null" : ("\"" + default_evaluators + "\""))
+                                                             + (da_empty ? "" : ", ") + dynamic_arguments
+                               + ") + \"";
             }
             String locator_code = "resolveLocator(context, \"ctn://" + locator_string + "\", " + variable + ")";
             if (cast != null && cast.length() != 0) {
@@ -236,17 +262,48 @@ public class TCHJavaPP implements TCHandler {
         return current_node;
     }
 
+    public TOMNode handleConfigurationBegin (CallContext context, TCEvent event, TOMNode current_node, boolean relative) throws InvalidTemplateSyntax {
+        if (relative) {
+          processCode(context, "config.get(context, ", false);
+        } else {
+          processCode(context, "com.sphenon.basics.configuration.Configuration.get(context, ", false);
+        }
+        return current_node;
+    }
+
+    public TOMNode handleConfigurationEnd (CallContext context, TCEvent event, TOMNode current_node, boolean relative) throws InvalidTemplateSyntax {
+        processCode(context, ")", false);
+        return current_node;
+    }
+
+    public TOMNode handleDynamicBegin (CallContext context, TCEvent event, TOMNode current_node) throws InvalidTemplateSyntax {
+        processCode(context, "com.sphenon.basics.expression.DynamicString.process(context, (String) (", false);
+        return current_node;
+    }
+
+    public TOMNode handleDynamicEnd (CallContext context, TCEvent event, TOMNode current_node, String dynamic_arguments, String default_evaluators) throws InvalidTemplateSyntax {
+
+        boolean da_empty   = (dynamic_arguments.matches(" *") ? true : false);
+        processCode(context, "), " + (default_evaluators == null ? "(String) null" : ("\"" + default_evaluators + "\""))
+                             + (da_empty ? "" : ", ") + dynamic_arguments
+                             + ")",
+                    false);
+        return current_node;
+    }
+
     public TOMNode handleKeywordFunction (CallContext context, TCEvent event, TOMNode current_node, String keyword) throws InvalidTemplateSyntax {
         switch (keyword) {
-            case "time"    : processCode(context, "com.sphenon.basics.system.SystemUtilities.getDate(context, ", false);
-            case "format"  : processCode(context, "com.sphenon.basics.system.SystemUtilities.format(context, ", false);
-            case "size"    : processCode(context, "com.sphenon.basics.system.MathUtilities.size(context, ", false);
-            case "average" : processCode(context, "com.sphenon.basics.system.MathUtilities.average(context, ", false);
-            case "product" : processCode(context, "com.sphenon.basics.system.MathUtilities.product(context, ", false);
-            case "sum"     : processCode(context, "com.sphenon.basics.system.MathUtilities.sum(context, ", false);
-            case "minimum" : processCode(context, "com.sphenon.basics.system.MathUtilities.minimum(context, ", false);
-            case "maximum" : processCode(context, "com.sphenon.basics.system.MathUtilities.maximum(context, ", false);
-            case "reverse" : processCode(context, "com.sphenon.basics.many.ReverseList.create(context, ", false);
+            case "time"    : processCode(context, "com.sphenon.basics.system.SystemUtilities.getDate(context, ", false); break;
+            case "format"  : processCode(context, "com.sphenon.basics.i18n.Formatter.format(context, ", false); break;
+            case "size"    : processCode(context, "com.sphenon.basics.system.MathUtilities.size(context, ", false); break;
+            case "average" : processCode(context, "com.sphenon.basics.system.MathUtilities.average(context, ", false); break;
+            case "product" : processCode(context, "com.sphenon.basics.system.MathUtilities.product(context, ", false); break;
+            case "sum"     : processCode(context, "com.sphenon.basics.system.MathUtilities.sum(context, ", false); break;
+            case "minimum" : processCode(context, "com.sphenon.basics.system.MathUtilities.minimum(context, ", false); break;
+            case "maximum" : processCode(context, "com.sphenon.basics.system.MathUtilities.maximum(context, ", false); break;
+            case "reverse" : processCode(context, "com.sphenon.basics.many.ReverseList.create(context, ", false); break;
+            case "recode"  : processCode(context, "com.sphenon.basics.encoding.Encoding.recode(context, ", false); break;
+            case "encoding": processCode(context, "com.sphenon.basics.encoding.Encoding.", false); break;
         }
         return current_node;
     }
@@ -357,6 +414,8 @@ public class TCHJavaPP implements TCHandler {
 
             code += type + " " + variable + "_" + index + " = (" + type + ") (";
         } else if (keyword.matches("first|notfirst")) {
+            optvarname = true;
+        } else if (keyword.matches("duplicates|notduplicates|declareduplicates")) {
             optvarname = true;
         } else if (keyword.matches("declarepass")) {
             optvarname = true;
@@ -573,7 +632,7 @@ public class TCHJavaPP implements TCHandler {
         } else if (keyword.matches("first|notfirst")) {
             this.stopBuffering(context);
 
-            String varname = this.getLastBufferString(context).toString();
+            String varname = this.getLastBufferString(context);
             if (varname == null || varname.matches(" *")) {
                 TOMNode start = current_node;
                 if (start.getChildNodes(context).size() > 0) {
@@ -594,20 +653,44 @@ public class TCHJavaPP implements TCHandler {
         } else if (keyword.matches("declarepass")) {
             this.stopBuffering(context);
 
-            String varname = this.getLastBufferString(context).toString();
+            String varname = this.getLastBufferString(context);
 
             code  = "boolean " + varname + "_passflag" + " = false;\n";
         } else if (keyword.matches("declareindex")) {
             this.stopBuffering(context);
 
-            String varname = this.getLastBufferString(context).toString();
+            String varname = this.getLastBufferString(context);
 
             code  = "int " + varname + "_index" + " = 0;\n";
+        } else if (keyword.matches("duplicates|notduplicates")) {
+            this.stopBuffering(context);
+
+            String varname = this.getLastBufferString(context, 0);
+            String item    = this.getLastBufferString(context, 1);
+
+            if (item == null) {
+                TOMNode start = current_node;
+                if (start.getChildNodes(context).size() > 0) {
+                    start = start.getChildNodes(context).lastElement();
+                }
+                String variable = TOMTemplateLocatorTarget.getCurrentVariable(context, start);
+                item = variable;
+            }
+
+            code  = "{ boolean " + varname + "_is_duplicate = (" + varname + "_duplicates.contains(" + item + "));\n";
+            code += "  " + varname + "_duplicates.add(" + item + ");\n";
+            code += "  if (" + varname + "_is_duplicate ==  " + (keyword.equals("duplicates") ? "true" : "false") + ") {\n";
+        } else if (keyword.matches("declareduplicates")) {
+            this.stopBuffering(context);
+
+            String varname = this.getLastBufferString(context);
+
+            code  = "java.util.Set " + varname + "_duplicates" + " = new java.util.HashSet();\n";
         } else if (keyword.equals("current")) {
         } else if (keyword.equals("index")) {
             this.stopBuffering(context);
 
-            String varname = this.getLastBufferString(context).toString();
+            String varname = this.getLastBufferString(context);
             if (varname == null || varname.matches(" *")) {
                 TOMNode start = current_node;
                 if (start.getChildNodes(context).size() > 0) {
@@ -668,7 +751,7 @@ public class TCHJavaPP implements TCHandler {
 
             String alias         = this.current_block_alias.pop();
 
-            String message_code = this.getLastBufferString(context).toString();
+            String message_code = this.getLastBufferString(context);
             int cp = message_code.indexOf(':');
 
             code = ((alias == null || alias.isEmpty()) ? "" : (" if (" + alias + ") {")) + " System.err.println(String.format(" + message_code + "));" + ((alias == null || alias.isEmpty()) ? "" : " }") + "\n";
@@ -736,6 +819,8 @@ public class TCHJavaPP implements TCHandler {
 
             code += variable + " = " + variable + "_stack.pop(); }\n";
         } else if (keyword.matches("first|notfirst")) {
+            code = "\n}}\n";
+        } else if (keyword.matches("duplicates|notduplicates")) {
             code = "\n}}\n";
         } else if (keyword.matches("isa|notisa")) {
             String type          = this.current_block_type.pop();

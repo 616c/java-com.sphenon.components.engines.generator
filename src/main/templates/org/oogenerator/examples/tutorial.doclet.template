@@ -1,0 +1,101 @@
+G-2.0-java_jpp-1.0
+▼…
+import com.sphenon.basics.graph.*;
+import com.sphenon.basics.graph.factories.*;
+import com.sphenon.basics.graph.tplinst.*;
+import com.sphenon.basics.system.*;
+import java.io.InputStream;
+import java.util.Vector;
+import java.util.Comparator;
+▼…
+⊏ name("tutorial.doclet") ⊐…
+⊏ locatortarget Object ⊐…
+« TreeNode examples_node = Factory_TreeNode.tryConstruct(context, "oorl://File/.");
+»…
+<?xml version="1.0" encoding="UTF-8" ?><!-- -*-coding: utf-8; -*- -->
+<!DOCTYPE docl:Doclet PUBLIC '-//SPHENON//DTD Doclet v1.0 20020413//EN' 'doclet.dtd'>
+<docl:Doclet
+  xmlns:xidl="http://xmlns.sphenon.de/xidl"
+  xmlns:docl="http://xmlns.sphenon.de/docl"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+  <!-- =================================================================================================================== -->
+  <docl:Entity>xocp</docl:Entity>
+  <!-- =================================================================================================================== -->
+  <docl:Tutorial SecurityClass="Public" Audience="Developer|SystemArchitect" Intent="Publication" Extent="45min">
+    <section>
+      <title>Tutorial</title>
+      <section id="example1template">
+        <title xml:lang="en">A Simple Template</title>
+        <title xml:lang="de">Ein einfaches Template</title>
+        <para xml:lang="en" Form="Website">
+          The following example shows a simple OOGenerator Template.
+        </para>
+        <para xml:lang="de" Form="Website">
+          Das folgende Beispiel zeigt eine einfaches OOGenerator Template.
+        </para>
+        <para>
+          <example>
+            <title>helloworld.template</title>
+            <programlisting>
+G-2.0-plain_java-1.0
+
+    Hello world!
+
+            </programlisting>
+          </example>
+        </para>
+      </section>
+      <section id="example1call">
+        <title xml:lang="en">Test Execution</title>
+        <title xml:lang="de">Test Durchführung</title>
+        <para xml:lang="en" Form="Website">
+          To execute the test, the following command can be used. It is
+          assumed, that the jar- and template-file are located in the current directory.
+        </para>
+        <para xml:lang="de" Form="Website">
+          Um den Test auszuführen, kann folgender Aufruf verwendet werden. Dabei
+          wird vorausgesetzt, daß sich das jar- und das template-File im aktuellen
+          Verzeichnis befinden.
+        </para>
+        <para>
+          <example>
+            <title>Testaufruf</title>
+            <programlisting><![CDATA[
+java -classpath oogenerator.jar com.sphenon.engines.generator.operations.Operation_Generate helloworld.template helloworld.out
+            ]]></programlisting>
+          </example>
+        </para>
+      </section>
+      ⋮« Vector examples = ((VectorImpl_TreeNode_long_) examples_node.getChilds(context, new NodeFilterRegExp(context, "", ".*", "Example.*\\.template(\\.module)?", "^$", "", ""))).getImplementationVector(context);
+         java.util.Collections.sort(examples, new Comparator() {
+             public int compare(Object o1, Object o2) {
+                 TreeNode tn1 = ((TreeNode) o1);
+                 TreeNode tn2 = ((TreeNode) o2);
+                 String i1 = tn1.getId(null);
+                 String i2 = tn2.getId(null);
+                 return i1.compareTo(i2);
+             }
+         });
+         ∀(examples){»…
+      <section id="◂((String)(‖"Ⓟ/Id")).replaceFirst("\\.template(\\.module)?$","")⌘MC/LCU▸">
+        <title>◂((String)(‖"Ⓟ/Id")).replaceFirst("\\.template\\.module$"," (Module)").replaceFirst("\\.template$","")▸</title>
+        <para>
+          <example>
+            <title>◂((String)(‖"Ⓟ/Id")).replaceFirst("\\.template\\.module$"," (Module)").replaceFirst("\\.template$","")▸</title>
+            <programlisting><![CDATA[
+              ⋮⊰  das hier ist gequälte Scheisse, /Content/Data/Stream ginge prinzipiell, nur
+                  hat das verf.... Java einen ewig-doofen bug der nicht gefixt wird und
+                  meldet "illegal access" ⊱…
+              ⋮«∀(FileUtilities.readStream(context, ((Data_MediaObject)(((NodeContent_Data)(‖"Ⓟ/Content")).getData(context))).getStream(context))){»…
+                ⋮◂⊙▸
+              ⋮«}/∀»…
+            ]]></programlisting>
+          </example>
+        </para>
+      </section>
+      ⋮«}/∀»…
+    </section>
+  </docl:Tutorial>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+</docl:Doclet>

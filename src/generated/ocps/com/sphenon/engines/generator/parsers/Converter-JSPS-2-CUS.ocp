@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser CLASS="TemplateParser" xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+  <TOMParser>
+    <BeginHandler OID="mth" CLASS="TCHMain">
+      <SourceHandler CLASS="TCHLanguageDispatcher">
+        <TextHandler CLASS="TCHCUSWriter" OID="writer">
+          <Writer PARAMETER="Writer"/>
+        </TextHandler>
+        <JavaCodeHandler OIDREF="writer"/>
+        <JavaExpressionHandler OIDREF="writer"/>
+        <TemplateCommentHandler OIDREF="writer"/>
+        <TemplateCodeHandler OIDREF="writer"/>
+        <TagHandler OIDREF="writer"/>
+        <PPTagHandler NULL="true"/>
+      </SourceHandler>
+    </BeginHandler>
+    <SourceHandler OIDREF="mth"/>
+    <EndHandler OIDREF="mth"/>
+  </TOMParser>
+</parser>

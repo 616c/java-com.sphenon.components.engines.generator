@@ -167,6 +167,11 @@
       <version>1.0.0</version>
     </dependency>      
     <dependency>
+      <artifactId>json</artifactId>
+      <groupId>com.sphenon.components.formats</groupId>
+      <version>1.0.0</version>
+    </dependency>      
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.11.0</version>

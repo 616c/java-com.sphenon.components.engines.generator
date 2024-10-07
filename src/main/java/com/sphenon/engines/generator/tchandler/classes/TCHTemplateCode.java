@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.tchandler.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -20,6 +20,7 @@ import com.sphenon.basics.exception.*;
 import com.sphenon.basics.notification.*;
 import com.sphenon.basics.customary.*;
 import com.sphenon.basics.data.*;
+import com.sphenon.basics.system.*;
 
 import com.sphenon.engines.generator.*;
 import com.sphenon.engines.generator.tom.*;
@@ -28,13 +29,11 @@ import com.sphenon.engines.generator.tchandler.*;
 import com.sphenon.engines.generator.returncodes.*;
 
 import java.io.BufferedReader;
+import java.io.StringReader;
 
 import java.util.Vector;
 
 public class TCHTemplateCode implements TCHandler {
-
-    public TCHTemplateCode (CallContext context) {
-    }
 
     public TOMNode handle(CallContext context, TCEvent event, TOMNode current_node, BufferedReader reader) throws InvalidTemplateSyntax{
 
@@ -55,18 +54,52 @@ public class TCHTemplateCode implements TCHandler {
         return current_node;
     }
 
+    public TCHTemplateCode (CallContext context) {
+    }
+
+    protected TCHandler java_code_handler;
+
+    public TCHandler getJavaCodeHandler (CallContext context) {
+        return this.java_code_handler;
+    }
+
+    public TCHandler defaultJavaCodeHandler (CallContext context) {
+        return null;
+    }
+
+    public void setJavaCodeHandler (CallContext context, TCHandler java_code_handler) {
+        this.java_code_handler = java_code_handler;
+    }
+
+    protected String processed_java_code;
+
+    public void handleProcessedJavaCode(CallContext context, BufferedReader reader) throws InvalidTemplateSyntax {
+        this.processed_java_code = FileUtilities.doReadReaderIntoString(context, reader, true, "template processing");
+    }
+
+    protected String processJavaCode(CallContext context, TOMNode current_node, String code) throws InvalidTemplateSyntax {
+        if (this.java_code_handler == null) {
+            return code;
+        } else {
+            StringReader string_reader = new StringReader(code);
+            BufferedReader buffered_reader = new BufferedReader(string_reader);
+            this.java_code_handler.handle(context, TCEvent.TEMPLATE_SOURCE, current_node, buffered_reader);
+            return this.processed_java_code;                
+        }
+    }
+
     public TOMNode handleSignature(CallContext context, TOMNode current_node, Vector signature) throws InvalidTemplateSyntax {
         new TOMTemplateSignature(context, current_node, (Vector<TCodeArgument>) signature);
         return current_node;
     }
 
     public TOMNode handleName(CallContext context, TOMNode current_node, String name_expression) throws InvalidTemplateSyntax {
-        new TOMTemplateName(context, current_node, name_expression);
+        new TOMTemplateName(context, current_node, processJavaCode(context, current_node, name_expression));
         return current_node;
     }
 
     public TOMNode handleLastDataModification(CallContext context, TOMNode current_node, String date_expression) throws InvalidTemplateSyntax {
-        new TOMLastDataModification(context, current_node, date_expression);
+        new TOMLastDataModification(context, current_node, processJavaCode(context, current_node, date_expression));
         return current_node;
     }
 
@@ -88,7 +121,7 @@ public class TCHTemplateCode implements TCHandler {
     }
 
     public TOMNode handlePartitionBegin(CallContext context, TOMNode current_node, String name_expression, String do_not_modify, String close_at_partition_end) throws InvalidTemplateSyntax {
-        return new TOMTemplatePartition(context, current_node, name_expression, do_not_modify, close_at_partition_end);
+        return new TOMTemplatePartition(context, current_node, processJavaCode(context, current_node, name_expression), do_not_modify, close_at_partition_end);
     }
 
     public TOMNode handlePartitionEnd(CallContext context, TOMNode current_node) throws InvalidTemplateSyntax {
@@ -101,6 +134,9 @@ public class TCHTemplateCode implements TCHandler {
 
     public TOMNode handleInsert(CallContext context, TOMNode current_node, String generator_name, String template_name, String template_name_code, String arguments) throws InvalidTemplateSyntax {
         if (template_name != null && template_name.length() != 0) {
+
+            arguments = processJavaCode(context, current_node, arguments);
+
             if (template_name.matches("^this\\..*")) {
                 new TOMTemplateInsert(context, current_node, template_name.substring(5), arguments, true);
             } else if (template_name.matches("^super\\..*")) {
@@ -136,6 +172,11 @@ public class TCHTemplateCode implements TCHandler {
 
     public TOMNode handleRequirement(CallContext context, TOMNode current_node, String template_name, String arguments) throws InvalidTemplateSyntax {
         new TOMTemplateRequirement(context, current_node, template_name, arguments);
+        return current_node;
+    }
+
+    public TOMNode handleTemplateProperty(CallContext context, TOMNode current_node, String name, String value) throws InvalidTemplateSyntax {
+        new TOMTemplateProperty(context, current_node, name, value);
         return current_node;
     }
 

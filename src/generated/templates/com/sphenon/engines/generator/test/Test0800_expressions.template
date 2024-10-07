@@ -1,0 +1,10 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+
+TestProperty     : ◂⚡(com.sphenon.basics.expression.TestProperty, "Ho.")⚡▸
+TestProperty     : ◂⚡("com.sphenon.basics.expression", "TestProperty", "Ho.")⚡▸
+TestPropertyList : ◂⚡(com.sphenon.basics.expression.TestPropertyList, new java.util.ArrayList())⚡▸
+TestPropertyList : ◂⚡(com.sphenon.basics.expression.TestPropertyList, ★[])⚡▸
+TestPropertyMap  : ◂⚡(com.sphenon.basics.expression.TestPropertyMap, new java.util.HashMap(), ",", "=")⚡▸
+TestPropertyMap  : ◂⚡(com.sphenon.basics.expression.TestPropertyMap, ★{}, ",", "=")⚡▸
+
+LocalTestProperty: ◂⚡(.LocalTestProperty, "Ho.")⚡▸

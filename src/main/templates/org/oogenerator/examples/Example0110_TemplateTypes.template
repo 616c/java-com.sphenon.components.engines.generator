@@ -1,0 +1,33 @@
+G-2.0-plain_java-1.0
+⊰
+   Up to now, all templates begun with this cryptic line:
+
+     G-2.0-plain_java-1.0
+
+   It reads like this:
+
+     G-2.0                this template requires "Generator, Version 2.0"
+     plain_java-1.0       it is a template of type "plain_java, Version 1.0"
+
+   The generator version is specified for compatibility reasons. If the
+   generator behaviour changes in future versions, it is used to support old
+   templates, or at least issue a warning about possible problems.
+
+   The template type specifies the context within which the template is
+   interpreted and executed. "plain_java" means: there's nothing but plain
+   Java available.
+
+   Some common contexts are:
+   
+     plain_java-1.0                       nothing special, just plain Java
+
+     plain_java_jspstyle-1.0              same, but enabling ASCII (JSP like) syntax
+
+     java_jpp-1.0                         plain Java with a special preprocessor enabled
+
+     xml-1.0                              for processing xml files
+
+     xml_string-1.0                       for processing xml, passed as Strings
+
+   These contexts will be introduced in more detail in following examples.
+⊱…

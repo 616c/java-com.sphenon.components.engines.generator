@@ -1,0 +1,63 @@
+G-2.0-plain_java-1.0
+
+   Maybe the most striking feature of the OOGenerator is it's nice and compact
+   unicode syntax. While it is eye-catching, it's just syntactic sugar, and
+   besides it is optional. There's an alternative syntax available, which is
+   pretty JSP-like. If you don't like both: no problem - just plugin your own
+   syntax frontend.
+
+   Since unicode syntax looks best - at least we do think so - it is used in
+   the examples here. It is important to use an appropriate unicode font to
+   view them correctly. Most moderately recent browsers should have no problem
+   with this, while some text editors might need tuning.
+
+   If you prefer to use the ASCII (JSP like) syntax, note that there is a
+   converter available, which transforms one syntax into the other in both
+   directions.
+
+   -------------------------------------------------------------------------
+
+   Here is a list of correspondences between Unicode and ASCII syntax:
+
+   « java code »                      <% java code %>
+   ⊰ comment ⊱                        <%-- comment --%>
+   ⊰✉ message ⊱                       <%--#{message} message --%>
+   ⊰✏ doclet ⊱                        <%--#{doclet} doclet --%>
+   ⊰⚒ work ⊱                          <%--#{work} work --%>
+   ◂ print code ▸                     <%= print code %>
+   ◂ print code ⌘encoding▸            <%= print code %%encoding%>
+   ◂⊙▸                                <%=#{current}()%>
+   ◂Ⓘ▸                                <%=#{index}()%>
+   ▼ file level code (import) ▼       <%@ file level code (import) %>
+   ▲ class level code (declaration) ▲ <%! class level code (declaration) %>
+   ⊏ template code ⊐                  <%? template code ?%>
+   ⊏ signature(...) ⊐                 <%? signature(...) ?%>
+   ⊏ ➜ somepart(...) ⊐                <%? #{insert} somepart(...) ?%>
+   ⊏ ⌘ ⊐...⊏ /⌘ ⊐                     <%? %% ?%>...<%? /%% ?%>
+   ◂‖"Ⓧ/./path/expression"▸           <%= ::"XPath/./path/expression"%>
+   ◂‖"Ⓟ/..."▸                         <%= ::"Property/..."%>
+   ◂‖"✦/..."▸                         <%= ::"XModel/..."%>
+   ◂ recoded ⌘xml/html▸               <%= recoded %%xml/html%>
+   ⊏ Ⓣ somepart(...) ⊐...⊏ /Ⓣ ⊐       <%? #{template} somepart(...) ?%>...<%? /#{template} ?%>
+   ≤ Java Template ≥                  <- Java Template ->
+   ≦ Model Template ≧                 <= Model Template =>
+   ⑊◂ escaped ⑊▸                      ◂ escaped ▸
+   ⋖ tag(a,b,c) ⋗                     <@ tag(a,b,c) @>
+   ●(...){ ... }/●                    #{select}(...){ ... }/#{select}
+   ∃(...){ ... }/∃                    #{exists}(...){ ... }/#{exists}
+   ⁇(...){ ... }/⁇                    #{isvalid}(...){ ... }/#{isvalid}
+   ¬⁇(...){ ... }/¬⁇                  #{isinvalid}(...){ ... }/#{isinvalid}
+   ∅(...){ ... }/∅                    #{empty}(...){ ... }/#{empty}
+   ¬∅(...){ ... }/¬∅                  #{notempty}(...){ ... }/#{notempty}
+   ⇾(...){ ... }/⇾                    #{isa}(...){ ... }/#{isa}
+   ∀(...){ ... }/∀                    #{for}(...){ ... }/#{for}
+   ∀(...∪...){ ... }/∀                #{for}(...#{union}...){ ... }/#{for}
+   ∀(...){ ➀{...}∨{...}/➀ ... }/∀     #{for}(...){ #{first}(){...}#{else}(){...}/#{first} ... }/#{for}
+   ∀(...){ ¬➀{...}∨{...}/¬➀ ... }/∀   #{for}(...){ #{notfirst}(){...}#{else}(){...}/#{notfirst} ... }/#{for}
+   ➀:(...)                            #{declarepass}(...)
+   ¶(...)  /¶                         #{indent}(...)  /#{indent}
+   Ⓡpattern=replacement               ~~~pattern=replacement
+   ⏎                                  \n
+   …                                  \
+   ⋮                                  <%|
+

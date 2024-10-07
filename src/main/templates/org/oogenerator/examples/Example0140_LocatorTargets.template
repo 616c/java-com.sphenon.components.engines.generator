@@ -1,0 +1,25 @@
+G-2.0-java_jpp-1.0
+⊰
+   As mentioned in the previos example, the parser sometimes needs to know
+   something about the instances a locator returns. This is done by declaring
+   a socalled "locator target":
+⊱…
+
+    ⋮⊏ locatortarget Object = (Object object) ⊐…
+
+⊰
+   The above statement is a declaration. It delares a locator target named
+   "Object" with an instance type of "Object" and a variable name of "object".
+
+   To switch between locator targets, the following selector can be used:
+⊱…
+
+    ⋮⊏ locatortarget Object ⊐…
+
+⊰
+   Note that the declaration of a locator target also implicitly selects
+   it. Therefore, it is not necessary to write:
+⊱…
+
+    ⋮⊏ locatortarget Object = (Object object) ⊐…
+    ⋮⊏ locatortarget Object ⊐…

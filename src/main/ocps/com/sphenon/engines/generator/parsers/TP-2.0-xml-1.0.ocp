@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser CLASS="TemplateParser" xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+  <TOMParser>
+    <BeginHandler OID="mth" CLASS="TCHMain">
+      <SourceHandler CLASS="TCHCompactUnicodeSyntax2ASCII">
+        <ASCIISourceHandler CLASS="TCHLanguageDispatcher">
+          <TextHandler CLASS="TCHText"/>
+          <JavaCodeHandler CLASS="TCHJavaPP">
+            <JavaCodeHandler CLASS="TCHJavaCode"/>
+          </JavaCodeHandler>
+          <JavaExpressionHandler CLASS="TCHJavaPP">
+            <JavaCodeHandler CLASS="TCHJavaExpression"/>
+          </JavaExpressionHandler>
+          <TemplateCommentHandler CLASS="TCHTemplateComment"/>
+          <TemplateCodeHandler CLASS="TCHTemplateCode"/>
+          <TagHandler CLASS="TCHTag"/>
+          <PPTagHandler CLASS="TCHPPTag"/>
+        </ASCIISourceHandler>
+      </SourceHandler>
+    </BeginHandler>
+    <SourceHandler OIDREF="mth"/>
+    <EndHandler OIDREF="mth"/>
+    <IncludeModules>
+      <Module>com.sphenon.engines.generator.modules.JavaPP</Module>
+      <Module>com.sphenon.engines.generator.modules.XML</Module>
+    </IncludeModules>
+  </TOMParser>
+</parser>

@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.tchandler.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -56,12 +56,30 @@ public class TCHPPTag implements TCHandlerPP {
         }
     }
 
-    public void handleInvocation(CallContext context, TCEvent event, TOMNode current_node, String tag_name, Vector arguments, boolean is_start) throws InvalidTemplateSyntax {
+    public void handleInvocation(CallContext context, TCEvent event, TOMNode current_node, String tag_name, Vector arguments, boolean is_start, Vector recoding) throws InvalidTemplateSyntax {
+
+        // hmm, I guess recoding won't work here, since output is
+        // redirected to this.out; don't know; code was copied here
+        // for symmetrie/handleInvocation-signature-compatibility
+        // from TCHTag.java
+
+        TOMNode save_node = null;
+        if (recoding != null && recoding.size() != 0) {
+            save_node = current_node;
+            current_node = new TOMPlain(context, current_node);
+
+            current_node.getProperties(context).setRecoding(context, new Recoding(context, (Vector<String[]>) recoding));
+        }
+
         TagHandler th = current_node.getRootNode(context).getTagHandler(context, tag_name);
         if (is_start) {
             th.handleTagBegin(context, event, current_node, tag_name, (Vector<String>) arguments, null, this.out);
         } else {
             th.handleTagEnd(context, event, current_node, tag_name, (Vector<String>) arguments, null, this.out);
+        }
+
+        if (save_node != null) {
+            current_node = save_node;
         }
     }
 

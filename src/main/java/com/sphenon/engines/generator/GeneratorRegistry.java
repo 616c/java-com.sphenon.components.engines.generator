@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -216,20 +216,45 @@ public class GeneratorRegistry {
         java.lang.Runtime.getRuntime().addShutdownHook(new Thread() { public void run() { saveCache(RootContext.getDestructionContext()); } });
     }
 
+    static protected int gtc_verbose = 1; // 0: none, 1: summary, 2: detailed
+
     protected Map<String,String> getGeneratorCache(CallContext context) {
         Map<String,String> cache = new HashMap<String,String>();
+
+        int gtc_read = 0;
         String cache_content = config.get(context, "Cache", (String) null);
         if (cache_content != null) {
             for (String entry : cache_content.split(",")) {
                 String[] ep = entry.split("\\+",-1);
                 cache.put(Encoding.recode(context, ep[0], Encoding.URI, Encoding.UTF8),
                           Encoding.recode(context, ep[1], Encoding.URI, Encoding.UTF8));
+                gtc_read++;
             }
         }
+        if (gtc_verbose >= 1) {
+            System.err.println("Generator Template Cache: read " + gtc_read);
+        }
+
+        int gpc_read = 0;
+        String preload_content = config.get(context, "Preload", (String) null);
+        if (preload_content != null) {
+            for (String entry : preload_content.split(",")) {
+                String[] ep = entry.split("\\+",-1);
+                cache.put(Encoding.recode(context, ep[0], Encoding.URI, Encoding.UTF8),
+                          Encoding.recode(context, ep[1], Encoding.URI, Encoding.UTF8));
+                gpc_read++;
+            }
+        }
+        if (gtc_verbose >= 1) {
+            System.err.println("Generator Template Preload: read " + gpc_read);
+        }
+
         return cache;
     }
 
     public void saveCache(CallContext context) {
+        int gtc_written = 0;
+        int gtc_skipped = 0;
         try {
             if (cache_file != null) {
                 File f = new File(cache_file);
@@ -249,6 +274,9 @@ public class GeneratorRegistry {
                             if (full_class_name.matches(".*SHA1_[A-Fa-f0-9]+") == false) {
                                 String text_locator = loaded_generator_factories.get(full_class_name).getTextLocator(context);
                                 cache.put(full_class_name, (text_locator == null ? "" : text_locator));
+                                gtc_written++;
+                            } else {
+                                gtc_skipped++;
                             }
                         }
                     }
@@ -269,6 +297,9 @@ public class GeneratorRegistry {
                 bw.close();
                 osw.close();
                 fos.close();
+            }
+            if (gtc_verbose >= 1) {
+                System.err.println("Generator Template Cache: written " + gtc_written + ", skipped " + gtc_skipped);
             }
         } catch (FileNotFoundException fnfe) {
             CustomaryContext.create((Context)context).throwPreConditionViolation(context, fnfe, "Cannot write to file '%(filename)'", "filename", cache_file);

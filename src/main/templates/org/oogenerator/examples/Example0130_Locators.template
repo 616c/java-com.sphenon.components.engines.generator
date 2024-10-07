@@ -1,0 +1,119 @@
+G-2.0-java_jpp-1.0
+⊰
+   This example is a bit lengthy, but it's worth reading.
+
+   One of the major issues with generator templates is their tendency to
+   become clumsy over time, and often plain unreadable. The purpose of
+   templates is to write the desired target output easily and concise -
+   unfortunately, this interferes with controlling code.
+
+   We've already seen how unicode syntax (Example0000_Unicode) and tiny syntax
+   helpers (Example0060_PrettySyntax) help to keep templates tidy. Another
+   means is of course moving longer code sequences into helper classes. Here's
+   a fourth possibility.
+
+   A very common type of template code is navigation code. I.e., given some
+   instance, the programmer invokes a sequence of methods to navigate to a
+   target instance. A simple example is:
+
+       « Person person = ...; 
+         Address address = person.getAddress();
+         Vector<Phone> phones = address.getPhones();
+         Phone phone = phones.get(2);
+         Prefix prefix = phone.getPrefix();
+       »
+
+   If we just want to print the prefix, we can abbreviate like this:
+
+       The prefix is: ◂person.getAddress().getPhones().get(2).getPrefix()▸
+
+   The brackets and "gets" still look a bit clumsy, it looks better with
+   pathes:
+
+       The prefix is: ◂‖[person]"Ⓟ/Address/Phones/2/Prefix"▸
+
+   This is in fact a valid expression that can be used in templates of an
+   appropriate type.
+
+   Pathes are not directly built into the template parser - this is where
+   "Locators" come into play. The above statement is translated into an
+   invocation of a locator, which handles the path at runtime. The translated
+   code looks similar to this:
+
+       Locator.resolve("//Property/Address/Phones/2/Prefix", person);
+
+       (note the translation of the unicode "Ⓟ" into "//Property")
+
+   At runtime, the locator then translates this into a sequences of "gets",
+   like we've seen before. Admittedly, in this example, the syntactic
+   difference is not too big. But locators are much more powerful than this!
+
+   In fact, there's a universal concept behind them (you may want to
+   check out <http://www.oorl.org>, too). With pluggable locator extensions,
+   locators can be used to navigate through arbitrary structured
+   data. Instances and their relations are just an example. Other's are:
+
+       ‖"//File//home/me/myfile.txt"               a file in the file system
+       ‖"//Space/company/workplace"                a space
+       ‖"//XPath/article/section/title"            an element in a xml file
+       ‖"//JavaResource/com/sphenon/basics"        a resource in your classpath
+       ‖"//Artefact/org/oomodels"                  a resource in a project
+       ‖"//Model/org/uml/stereotypes"              an element of a UML model
+       ‖"//Address/Germany/Hamburg//Barkenkoppel"  a street in a city
+
+   Moreover, locators can be concatenated
+
+       ‖"//File//home/me/mytext.dbk/,//XPath/article/title"
+
+   The last example reads a file in your home directory, parses it with an xml
+   parser and retrieves it's title.
+
+   In addition to properties, the following unicode abbreviations are
+   predefined in the default preprocessor (CUS2ASCII):
+
+      Ⓟ   Property (Java POJO property access)
+      Ⓧ   XPath (navigation in xml, see www.w3c.org and xerces.apache.org)
+      Ⓕ   File (navigation in file system)
+      ✦   XModel (UML XModel extension property access)
+
+   To supported different locator syntaxes, several delimiters are supported:
+
+      ‖'...'
+      ‖"..."
+      ‖(...)
+      ‖{...}
+      ‖§...§
+
+   To use locators, the parser has to know a little bit about the objects that
+   are retrieved. For simple cases like property access, it's enough to
+   declare the template type like we've done in this example:
+
+       G-2.0-java_jpp-1.0
+
+   The associated parser configuration enables the Java preprocessor, and
+   declares the default object type for locators as "Object". For property
+   access this is sufficient.
+
+   To complete this example here's some more working code.
+
+   First, we declare two test classes:
+⊱…
+▲
+  public class Planet {
+    public String getName() { return "world"; }
+  }
+  public class SolarSystem {
+    public Planet getPlanet() { return new Planet(); }
+  }
+▲
+⊰
+   Then, we create a SolarSystem and use a property to access it's sole
+   planet's name:
+⊱…
+« SolarSystem solar_system = new SolarSystem(); »…
+
+    Hello, ◂‖[solar_system]"Ⓟ/Planet/Name"▸!
+
+⊰
+  This, of course, prints "Hello, world!" again.
+⊱…

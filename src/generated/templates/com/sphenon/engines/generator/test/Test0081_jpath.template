@@ -1,0 +1,30 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+▼…
+import com.sphenon.formats.json.*;
+import com.sphenon.formats.json.factories.*;
+import java.io.ByteArrayInputStream;
+▼…
+« String json = "{ \"greeting\":\"hello\", \"addressee\":\"world\", \"numbers\":[\"one\",\"two\",\"three\",\"four\"] }";
+  json_node = Factory_JSONNode.constructByObject(context, new ByteArrayInputStream(json.getBytes()));
+»…
+⊏ locatortarget JSON ⊐…
+once:
+
+  ◂‖"JPath/greeting"▸ ◂‖"JPath/addressee"▸
+
+twice:
+
+  ◂‖"Ⓙ/greeting"▸ ◂‖"Ⓙ/addressee"▸
+
+numbers:
+
+  ◂‖"Ⓙ/numbers/0"▸
+  ◂‖"Ⓙ/numbers/1"▸
+  ◂‖"Ⓙ/numbers/2"▸
+  ◂‖"Ⓙ/numbers/3"▸
+
+more numbers:
+
+ ⋮«∀(‖"Ⓙ/numbers"){»…
+  ◂⊙▸
+ ⋮«}/∀»…

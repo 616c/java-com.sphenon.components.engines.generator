@@ -1,0 +1,4 @@
+G-2.0-plain_java_jspstyle-1.0
+           <%|<%? signature(String test) ?%>\
+           <%|<%@ import java.util.Date; %>\
+           <%|Hi there: <%= test %>

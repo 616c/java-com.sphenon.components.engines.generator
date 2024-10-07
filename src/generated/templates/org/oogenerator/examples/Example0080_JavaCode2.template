@@ -1,0 +1,13 @@
+G-2.0-plain_java-1.0
+⊰
+   This templates demonstrates the embedding of arbitrary
+   types of Java code.
+⊱…
+« String greeting = "Hello, world!"; »…
+
+    ◂greeting▸
+
+« if (1 == 2) { » Something is wrong here. « } »…
+
+Countdown: « for (int i=10; i>=0; i--) { » ◂i▸« } »
+

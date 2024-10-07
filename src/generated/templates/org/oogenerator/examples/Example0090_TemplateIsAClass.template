@@ -1,0 +1,25 @@
+G-2.0-plain_java-1.0
+⊰
+   Each template is translated into a Java class with
+   the same name and in the same package.
+
+   Therefore, all features of Java classes are available
+   from within templates, too.
+⊱…
+⊰
+   Within two characters '▲...▲' you can define class level
+   code. I.e. you can declare variables and define methods.
+⊱…
+▲  protected void times(int a, int b) { return a * b; } ▲…
+
+    3 * 7 = ◂times(3, 7)▸
+
+⊰
+   You can declare class level code multiple times,  and at
+   arbitrary locations within your template.
+⊱…
+▲  static final protected float pi = 3.14159265; ▲…
+«  floar r = 1.0; »…
+
+   area : ◂ pi * r * r ▸
+

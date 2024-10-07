@@ -1,0 +1,53 @@
+G-2.0-plain_java-1.0
+⊰
+   This template demonstrates how to keep your templates readable.
+
+   There are three tiny syntactic helpers to solve three frequently encountered
+   problems. 
+⊱
+⊰
+   To illustrate the first problem, note that between the first comment and
+   the second one (this one) there is a line break. This line break appears
+   not only in the template, but in the output, too. You will want your
+   template being reasonable layouted, while at the same time having nicely
+   layouted results. How to achieve this?
+
+   First, note the three tiny continuation dots '…' behind the following comment
+   end delimiter:
+⊱…
+⊰
+   They simple say: please ignore the line break (they are comparable to the
+   use of a backslash in programming languages like C or C++).
+⊱…
+⊰
+   Another problem often encountered is the indentation depth mismatch between
+   template code and result code. E.g.
+⊱…
+                              Hello, world!  
+⊰
+   is of course indented in the output by 30 spaces. How to avoid this,
+   without compromising template layout? That's the purpose of the indentation
+   character '⋮', like here
+⊱…
+                             ⋮Hello, world!  
+⊰
+   The '⋮' character says: please ignore every whitespace between it and the
+   beginning of the line.
+
+   So, if you combine these concepts, you might e.g. write
+⊱…
+                             ⋮Hello, …
+                             ⋮◂"world"▸…
+                             ⋮!…
+⊰
+   which creates again "Hello, world!", without any additional spaces or line
+   breaks before, after of within the output.
+⊱…
+⊰
+   And finally, sometimes you may need the contrary of the continuation dots:
+   a linebreak in the output, but not in the template. This is the purpose of
+   the 'Return' sign '⏎'.
+
+   The following code produces 50 emtpy lines in the output:
+⊱…
+⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎⏎

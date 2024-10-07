@@ -1,0 +1,99 @@
+G-2.0-plain_java-1.0
+⊰
+   Templates produce output. Such output might be just plain
+   ASCII, plain Unicode or might be encoded somehow, say HTML.
+
+   Furthermore, templates process input, which may or may not
+   be written in the same encoding.
+
+   And finally, the normal template text might have a third
+   encoding.
+
+   Let's assume you want to create a Java properties file
+   based on XML input. Then
+
+   - in the input we have '&lt;', '&gt;' and '&amp;'.
+   - in our template text we just want to write normal Unicode.
+   - in the properties file everything non-ASCII (e.g. german
+     umlauts) must be escaped '\uXXXX'
+
+   In templates, such a situation is rather the rule then
+   an exception.
+
+   Instead of writing conversion calls each and everyplace,
+   we just can use the recoding operator '⌘':
+⊱…
+«  String xml_input = " immer und überall gilt: 17 &lt; 23 "; »…
+
+   ◂xml_input⌘XML/JAVAPROP▸
+
+⊰
+   You get the output
+
+   " immer und \u00FCberall gilt: 17 < 23 "
+
+   The '⌘...' sequence is called a 'recoding'.
+   It consists of a sequence of encoding names. The above
+   example reads 'convert XML to JAVAPROP'.
+
+   The encoding names are defined in an enumeration class
+   named 'Encoding'. You can use this class also from normal
+   Java code.
+
+   If we have many such expressions in our template, we can
+   define a default recoding:
+⊱…
+⊏ ⌘XML/JAVAPROP ⊐…
+
+   ◂xml_input▸
+
+⊏ /⌘ ⊐…
+⊰
+   This yields the same result as above.
+
+   Default encodings can be nested (they apply to included
+   and subtemplates, too, but we do not know yet what these are).
+⊱…
+⊏ ⌘DOCBOOK/JAVAPROP ⊐…
+   ⋮⊏ ⌘XML/JAVAPROP ⊐…
+
+       ◂xml_input▸
+
+   ⋮⊏ /⌘ ⊐…
+⊏ /⌘ ⊐…
+⊰
+   This again yields the same result as above.
+
+   Encodings need not be complete, they will be combined.
+⊱…
+⊏ ⌘XML/ ⊐…
+
+   ◂xml_input⌘/JAVAPROP▸
+
+⊏ /⌘ ⊐…
+⊰
+   This again yields the same result as above.
+
+   Note, that a default encoding applies to embedded Java expressions
+   as well as normal template text. What if they are different, as
+   within our example?
+
+   Then you can apply a different default encoding to these
+   categories.
+⊱…
+⊏ ⌘[x]XML/JAVAPROP ⊐…
+⊏ ⌘[t]UTF8/JAVAPROP ⊐…
+
+   ◂xml_input▸
+
+   This '&lt;' is not translated, since we're here in normal
+   template text, not in an expression.
+
+   ◂"But this '&lt;' is translated, since we're an expression"▸
+
+⊏ /⌘ ⊐…
+⊏ /⌘ ⊐…
+⊰
+   As you might have guessed, 'x' stands for 'expression' and
+   't' for 'template text'.
+⊱…

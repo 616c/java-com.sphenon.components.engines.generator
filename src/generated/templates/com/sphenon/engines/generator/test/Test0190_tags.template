@@ -1,0 +1,39 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+
+⋖ willy = com.sphenon.engines.generator.test.WillyTag ⋗
+
+⋖ willy ( "Hallo" , holla , 3 * 7 ) ⋗
+⋖ / willy ( "Hallo" , holla , 3 * 7 ) ⋗
+
+⋖willy("Hallo",holla,3*7)⋗
+⋖/willy("Hallo",holla,3*7)⋗
+
+⋖ willy ⋗
+⋖ / willy ⋗
+
+⋖willy⋗
+⋖/willy⋗
+
+⋖    willy    (    "Hallo"    ,    holla    ,    3    *    7    )    ⋗
+⋖    /    willy    (    "Hallo"    ,    holla    ,    3    *    7    )    ⋗
+
+⋖ * = com.sphenon.engines.generator.test.WallyTag ⋗
+
+⋖ wally ⋗
+
+⋖ * = com.sphenon.engines.generator.test.WullyTag ⋗
+
+⋖ wully ⋗
+⋖ wummy ⋗
+⋖ wubby ⋗
+
+⊰ ---- Somewhat more challenging: ---- ⊱…
+ABC: ◂"A⋖willy⋗B⋖/willy⋗C"▸
+anton: « String anton = "⋖willy⋗"; »◂anton▸
+berta: « String berta = "⋖/willy⋗"; »◂berta▸
+T-in-T: ⋖willy(⋖willy⋗)⋗
+ET-in-ET: ⋖/willy(⋖/willy⋗)⋗
+T-in-TC: ⊏➜this.mytemplate("⋖willy⋗")⊐
+ET-in-TC: ⊏➜this.mytemplate("⋖/willy⋗")⊐
+
+⊏Ⓣmytemplate(String arg)⊐◂arg▸⊏/Ⓣ⊐…

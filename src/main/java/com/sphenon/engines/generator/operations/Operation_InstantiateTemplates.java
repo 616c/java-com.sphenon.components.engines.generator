@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.operations;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -27,6 +27,7 @@ import com.sphenon.basics.system.*;
 import com.sphenon.basics.monitoring.*;
 import com.sphenon.basics.operations.*;
 import com.sphenon.basics.operations.classes.*;
+import com.sphenon.basics.operations.factories.*;
 import com.sphenon.basics.many.tplinst.*;
 import com.sphenon.basics.locating.*;
 import com.sphenon.basics.locating.factories.*;
@@ -213,9 +214,9 @@ public class Operation_InstantiateTemplates implements Operation, Dumpable {
                 cti.create(context, this.package_name, impvs, this.traits, this.recursive, already_processed, filter, keep_unmodified_files);
             }
 
-            execution = Class_Execution.createExecutionSuccess(context);
+            execution = Factory_Execution.createExecutionSuccess(context);
         } catch (Throwable t) {
-            execution = Class_Execution.createExecutionFailure(context, t);
+            execution = Factory_Execution.createExecutionFailure(context, t);
         }
 
         if (execution_sink != null) { execution_sink.set(context, execution); }

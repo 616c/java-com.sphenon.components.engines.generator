@@ -1,0 +1,26 @@
+G-2.0-test_jpp_jspstyle-1.0 -*- coding: utf-8; -*-
+
+<%? locatortarget Object = (Object object) ?%>
+
+<%  ::"Hallo/./test/zwei/drei" %>
+<%= ::"Hallo/./test/zwei/drei" %>
+<%! ::"Hallo/./test/zwei/drei" %>
+<%@ ::"Hallo/./test/zwei/drei" %>
+<%::"Hallo/./test/zwei/drei"%>
+<%=::"Hallo/./test/zwei/drei"%>
+<%!::"Hallo/./test/zwei/drei"%>
+<%@::"Hallo/./test/zwei/drei"%>
+
+<%= ::"SQL/select * from t" %>
+
+<% ::'Hallo/./test/zwei/drei' %>
+<% ::"Hallo/./test/zwei/drei" %>
+<% ::(Hallo/./test/zwei/drei) %>
+<% ::{Hallo/./test/zwei/drei} %>
+<% ::§Hallo/./test/zwei/drei§ %>
+<% ::'Hallo/ ./te st/zw ei/ drei ' %>
+<% ::"Hallo/ ./te st/zw ei/ drei " %>
+<% ::(Hallo/ ./te st/zw ei/ drei ) %>
+<% ::{Hallo/ ./te st/zw ei/ drei } %>
+<% ::§Hallo/ ./te st/zw ei/ drei § %>
+

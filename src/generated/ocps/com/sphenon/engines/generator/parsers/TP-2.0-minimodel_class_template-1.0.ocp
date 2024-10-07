@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser BASE="com/sphenon/engines/generator/parsers/TP-2.0-java_jpp-1.0"
+        xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+  <modules>
+    <Module>com.sphenon.engines.generator.modules.JavaPP</Module>
+    <Module>com.sphenon.engines.generator.modules.MiniModelFilesCommon</Module>
+    <Module>com.sphenon.engines.generator.modules.MiniModelFilesClassTemplate</Module>
+    <Module>com.sphenon.engines.generator.modules.IndentationHead</Module>
+    <Module>com.sphenon.engines.generator.modules.IndentationTail</Module>
+  </modules>
+</parser>

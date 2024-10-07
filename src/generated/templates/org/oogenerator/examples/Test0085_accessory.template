@@ -1,0 +1,21 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+
+⊏ locatortarget TestTarget = (Object o, AccessoryA aa, AccessoryB ab) ⊐
+
+« String[] sa = { "Eins", "Zwei", "Drei", "Vier", "Fünf" }; o = sa; »
+
+
+«∀(o){»…
+     ◂o▸ - ◂aa.a▸ - ◂ab.b▸
+«}/∀»…
+
+«∀(x:o){»…
+     ◂o▸ - ◂aa.a▸ - ◂ab.b▸
+     ◂x▸ - ◂x_aa.a▸ - ◂x_ab.b▸
+«}/∀»…
+
+«∀(-y:o){»…
+     ◂o▸ - ◂aa▸ - ◂ab▸
+     ◂y▸ - ◂y_aa.a▸ - ◂y_ab.b▸
+«}/∀»…
+

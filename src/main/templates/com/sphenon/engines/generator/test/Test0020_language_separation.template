@@ -1,0 +1,46 @@
+G-2.0-test_language_separation-1.0 -*- coding: utf-8; -*-
+
+Test Template: Language Separation
+----------------------------------------------------------------------------------
+
+Within a template there are several languages intermixed: 
+
+constant text                        which is finally reproduced just as it is
+
+⊏ template code ⊐                    code which is interpreted during template
+                                     parsing, i.e. when the intermediate
+                                     generator is created
+
+⊰ comment ⊱                          comments are discarded; if you want to
+                                     pass comments to the intermediate generator,
+                                     use standard java comments /*...*/
+                                     inside java code instead
+
+« java code »                        this java code is inserted verbatim into the
+                                     intermediate generator
+
+◂ print code ▸                       these java code expressions are inserted
+                                     into the intermediate generator and
+                                     surrounded by an output method so that
+                                     the result of the expression is inserted
+                                     into the current output stream of the
+                                     final generator during execution
+        
+◂ print code ⌘encoding▸              an optional encoding may be specified
+                                     when output is produced (this comprises
+                                     concepts like "encode as suitable for a
+                                     java code string")
+
+◂‖"Ⓧ/./XPath/Expression"▸              within expressions and java code XPATH
+                                     expressions can be embedded
+
+◂"./XPath/Expression"⌘xml/html▸      and an encoding for the content retrieved
+                                     by such expressions may be specified
+
+The line continuation character at the end of a line …
+is replaced with nothing.
+
+                         ⋮This text is indented, but only within
+                         ⋮the template. Space before vertical dots
+                         ⋮as well as the dots themselves are discarded.
+

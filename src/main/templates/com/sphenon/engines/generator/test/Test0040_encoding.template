@@ -1,0 +1,43 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+
+Encoding Test
+
+This should be URI-encoded: ◂"Hallo/abc/%&bla"⌘/URI▸
+This not: ◂"Hallo/abc/%&bla"▸
+This not: Hallo/abc/%&bla
+⊏ ⌘/URI ⊐…
+This again: ◂"Hallo/abc/%&bla"▸
+This again: Hallo/abc/%&bla
+⊏ ⌘/UTF8 ⊐…
+This again not: ◂"Hallo/abc/%&bla"▸
+This again not: Hallo/abc/%&bla
+⊏ end ⌘ ⊐…
+This again: ◂"Hallo/abc/%&bla"▸
+This again: Hallo/abc/%&bla
+⊏ end ⌘ ⊐…
+This again not: ◂"Hallo/abc/%&bla"▸
+This again not: Hallo/abc/%&bla
+⊏ ⌘/URI ⊐…
+And this again: ◂"Hallo/abc/%&bla"▸
+And this again: Hallo/abc/%&bla
+⊏ /⌘ ⊐…
+And this again not: ◂"Hallo/abc/%&bla"▸
+And this again not: Hallo/abc/%&bla
+⊏ ⌘[x]/URI ⊐…
+And this again: ◂"Hallo/abc/%&bla"▸
+But this not: Hallo/abc/%&bla
+⊏ /⌘ ⊐…
+And this again not: ◂"Hallo/abc/%&bla"▸
+But this still not: Hallo/abc/%&bla
+⊏ ⌘[t]/URI ⊐…
+And this still not: ◂"Hallo/abc/%&bla"▸
+But this: Hallo/abc/%&bla
+⊏ /⌘ ⊐…
+And this still not: ◂"Hallo/abc/%&bla"▸
+And this still not: Hallo/abc/%&bla
+⊏ ⌘[tx]/URI ⊐…
+But this: ◂"Hallo/abc/%&bla"▸
+And this: Hallo/abc/%&bla
+⊏ /⌘ ⊐…
+And this not: ◂"Hallo/abc/%&bla"▸
+And this not: Hallo/abc/%&bla

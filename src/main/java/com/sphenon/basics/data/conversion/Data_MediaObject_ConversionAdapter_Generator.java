@@ -1,7 +1,7 @@
 package com.sphenon.basics.data.conversion;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -59,6 +59,7 @@ public class Data_MediaObject_ConversionAdapter_Generator implements Data_MediaO
     protected String               filename_substitution_regexp;
     protected String               filename_substitution_subst;
     protected String               disposition_filename;
+    protected String               encoding;
 
     /**
        Uses the source data as a template to create output
@@ -105,6 +106,14 @@ public class Data_MediaObject_ConversionAdapter_Generator implements Data_MediaO
         }
 
         return this.disposition_filename;
+    }
+
+    public String getEncoding(CallContext context) {
+        return this.encoding;
+    }
+
+    public void setEncoding(CallContext context, String encoding) {
+        this.encoding = encoding;
     }
 
     public java.util.Date getLastUpdate(CallContext context) {

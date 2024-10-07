@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.operations;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -27,6 +27,7 @@ import com.sphenon.basics.expression.*;
 import com.sphenon.basics.monitoring.*;
 import com.sphenon.basics.operations.*;
 import com.sphenon.basics.operations.classes.*;
+import com.sphenon.basics.operations.factories.*;
 import com.sphenon.basics.many.tplinst.*;
 import com.sphenon.basics.locating.*;
 import com.sphenon.basics.locating.factories.*;
@@ -132,6 +133,20 @@ public class Operation_Generate implements Operation {
         this.interactive = interactive;
     }
 
+    protected boolean accept_defaults;
+
+    public boolean getAcceptDefaults (CallContext context) {
+        return this.accept_defaults;
+    }
+
+    public boolean defaultAcceptDefaults (CallContext context) {
+        return false;
+    }
+
+    public void setAcceptDefaults (CallContext context, boolean accept_defaults) {
+        this.accept_defaults = accept_defaults;
+    }
+
     protected TemplateInstanceRegistry template_instance_registry;
 
     public TemplateInstanceRegistry getTemplateInstanceRegistry (CallContext context) {
@@ -159,7 +174,7 @@ public class Operation_Generate implements Operation {
             }
         }
         try {
-            execute(context, generator_class, text_locator, generator_output_handler, interactive, template_instance_registry, o_args);
+            execute(context, generator_class, text_locator, generator_output_handler, interactive, accept_defaults, template_instance_registry, o_args);
             if (generator_output_handler instanceof GeneratorOutputToString) {
                 GeneratorOutputToString gots = (GeneratorOutputToString) generator_output_handler;
                 Vector<String> cns = gots.getChannelNames(context);
@@ -171,9 +186,9 @@ public class Operation_Generate implements Operation {
                     }
                 }
             }
-            execution = Class_Execution.createExecutionSuccess(context);
+            execution = Factory_Execution.createExecutionSuccess(context);
         } catch (Throwable t) {
-            execution = Class_Execution.createExecutionFailure(context, t);
+            execution = Factory_Execution.createExecutionFailure(context, t);
         }
 
         if (execution_sink != null) { execution_sink.set(context, execution); }
@@ -216,6 +231,10 @@ public class Operation_Generate implements Operation {
     }
 
     static protected void execute (CallContext context, String generator_class, String text_locator, GeneratorOutputHandler generator_output_handler, GOMExecutionContext gom_execution_context, boolean interactive, TemplateInstanceRegistry template_instance_registry, Object... o_args) throws NoSuchTemplate {
+        execute (context, generator_class, text_locator, generator_output_handler, gom_execution_context, interactive, false, template_instance_registry, o_args);
+    }
+
+    static protected void execute (CallContext context, String generator_class, String text_locator, GeneratorOutputHandler generator_output_handler, GOMExecutionContext gom_execution_context, boolean interactive, boolean accept_defaults, TemplateInstanceRegistry template_instance_registry, Object... o_args) throws NoSuchTemplate {
         Generator generator = GeneratorRegistry.get(context).getGenerator(context, generator_class, text_locator);
 
         Vector<FormalArgument> signature = generator.getSignature(context);
@@ -248,13 +267,28 @@ public class Operation_Generate implements Operation {
                                   : is_double       ? "Double"
                                   :                   "Locator";
 
-                boolean provided = (idx < o_args.length  ? true : false);
+                boolean provided = (    idx < o_args.length
+                                     && ((String) o_args[idx]).equals("§default") == false ? true : false);
 
                 String input;
 
                 if (provided) {
                     try {
-                        new_args[idx] = convertValue(context, fa, (String) o_args[idx]);
+                        String string_value = (String) o_args[idx];
+                        if (accept_defaults && string_value.isEmpty() == false && string_value.charAt(0) == '§') {
+                            string_value = string_value.substring(1);
+                        }
+                        new_args[idx] = convertValue(context, fa, string_value);
+                    } catch (ValidationFailure vf) {
+                        CustomaryContext.create((Context)context).throwPreConditionViolation(context, vf, "Invalid argument '%(name)' to generator, expected '%(expected)'", "name", fa.getArgumentName(context), "expected", typedesc + default_value_explanation);
+                        throw (ExceptionPreConditionViolation) null; // compiler insists
+                    } catch (InvalidLocator il) {
+                        CustomaryContext.create((Context)context).throwPreConditionViolation(context, il, "Invalid argument '%(name)' to generator, expected '%(expected)'", "name", fa.getArgumentName(context), "expected", typedesc + default_value_explanation);
+                        throw (ExceptionPreConditionViolation) null; // compiler insists
+                    }
+                } else if (default_value != null && accept_defaults) {
+                    try {
+                        new_args[idx] = convertValue(context, fa, default_value);
                     } catch (ValidationFailure vf) {
                         CustomaryContext.create((Context)context).throwPreConditionViolation(context, vf, "Invalid argument '%(name)' to generator, expected '%(expected)'", "name", fa.getArgumentName(context), "expected", typedesc + default_value_explanation);
                         throw (ExceptionPreConditionViolation) null; // compiler insists
@@ -329,8 +363,12 @@ public class Operation_Generate implements Operation {
         ((GeneratorInternal) generator).generate(context, generator_output_handler, gom_execution_context, o_args);
     }
 
+    static public void execute (CallContext context, String generator_class, String text_locator, GeneratorOutputHandler generator_output_handler, boolean interactive, boolean accept_defaults, TemplateInstanceRegistry template_instance_registry, Object... o_args) throws NoSuchTemplate {
+        execute(context, generator_class, text_locator, generator_output_handler, null, interactive, accept_defaults, template_instance_registry, o_args);
+    }
+
     static public void execute (CallContext context, String generator_class, String text_locator, GeneratorOutputHandler generator_output_handler, boolean interactive, TemplateInstanceRegistry template_instance_registry, Object... o_args) throws NoSuchTemplate {
-        execute(context, generator_class, text_locator, generator_output_handler, null, interactive, template_instance_registry, o_args);
+        execute(context, generator_class, text_locator, generator_output_handler, null, interactive, false, template_instance_registry, o_args);
     }
 
     static public void execute (CallContext context, String generator_class, GeneratorOutputHandler generator_output_handler, Object... o_args) {
@@ -387,6 +425,9 @@ public class Operation_Generate implements Operation {
         int a = 0;
         for (; a<args.length; a++) {
             if (args[a].matches("^-.*") == false) { break; }
+            if (args[a].equals("--accept-defaults")) {
+                og.setAcceptDefaults(context, true);
+            }
         }
         
         if (args.length - a < 1) {
@@ -395,7 +436,7 @@ public class Operation_Generate implements Operation {
             System.err.println("    java [java-options] com.sphenon.engines.generator.operations.Operation_Generate [options] <templatelocator> [outputlocator] [arguments]\n");
             System.err.println("\n");
             System.err.println("  java-options              e.g. classpath\n");
-            System.err.println("  options                   --configuration-name, --configuration-variant, --property\n");
+            System.err.println("  options                   --configuration-name, --configuration-variant, --property, --accept-defaults\n");
             System.err.println("  templatelocator           just a filename, or a textual locator (ctn)\n");
             System.err.println("  outputlocator             just a filename, or a textual locator (ctn)\n");
             System.err.println("                            if empty, the templatelocator is considered as a\n");
@@ -413,8 +454,10 @@ public class Operation_Generate implements Operation {
 //             outputlocator = ds.get(context);
 //         }
 
-        System.err.println("Template   : " + templatelocator);
-        System.err.println("Output     : " + (outputlocator == null ? "-using instance name-" : outputlocator));
+        if ((notification_level & Notifier.CHECKPOINT) != 0) {
+            NotificationContext.sendCheckpoint(context, "Template: '%(templatelocator)'", "templatelocator", templatelocator);
+            NotificationContext.sendCheckpoint(context, "Output  : '%(outputlocator)'", "outputlocator", (outputlocator == null ? "-using instance name-" : outputlocator));
+        }
         
         og.setTextLocator(context, templatelocator);
         og.setGeneratorClass(context, null);
@@ -436,7 +479,13 @@ public class Operation_Generate implements Operation {
 
         Execution execution = og.execute (context);
 
-        Dumper.dump(context, "Result: ", execution);
-    }
+        boolean ok = (execution.getProblemState(context).isGreen(context) == true);
 
+        if ((notification_level & Notifier.CHECKPOINT) != 0 || ok == false) {
+            Dumper.dump(context, "Result: ", execution);
+            if (ok == false) {
+                System.exit(1);
+            }
+        }
+    }
 }

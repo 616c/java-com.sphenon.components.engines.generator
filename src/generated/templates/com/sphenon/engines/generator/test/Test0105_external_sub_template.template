@@ -1,0 +1,13 @@
+G-2.0-plain_java-1.0 -*- coding: utf-8; -*-
+⊏ signature (Integer a, Integer b) ⊐…
+⊏ implements com.sphenon.engines.generator.test.TestInterface ⊐…
+▲ protected String parameter;
+  public String getValue (CallContext context, String parameter) {
+      this.parameter = parameter;
+      return "Toll, der Parameter: " + parameter;
+  }
+▲
+◂a▸ + ◂b▸ = ◂a+b▸
+« if (this.parameter != null) { »…
+ Der Parameter ist ◂this.parameter▸.
+« } »…

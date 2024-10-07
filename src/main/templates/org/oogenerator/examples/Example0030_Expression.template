@@ -1,0 +1,19 @@
+G-2.0-plain_java-1.0
+⊰
+   This templates demonstrates the use of embedded java expressions.
+⊱
+⊰
+   The first example is just another way to say "Hello, world!".
+   The placeholder ◂...▸ is replaced by the value of the java expression
+   between the filled arrows.
+⊱
+
+    Hello, ◂"world"▸!
+
+⊰
+   So, any valid java expression is usable.
+⊱
+
+    Hello, ◂"w"+"o"+"r"+"l"+"d"▸!
+    2 * 21 = ◂2*21▸
+

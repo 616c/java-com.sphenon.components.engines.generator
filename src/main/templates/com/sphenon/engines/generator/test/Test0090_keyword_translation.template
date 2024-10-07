@@ -1,0 +1,37 @@
+G-2.0-test_jpp_unicode-1.0 -*- coding: utf-8; -*-
+
+⊏ locatortarget Object = (Object object) ⊐
+
+«∀(‖"Ⓧ/./A/B/C"){»
+◂‖"Ⓧ/./D/E/F"▸
+«}/∀»
+
+«∃(‖"Ⓧ/./A/B/C"){»
+◂‖"Ⓧ/./D/E/F"▸
+«}/∃»
+
+«∀(willy:‖"Ⓧ/./A/B/C"){»
+◂‖[willy]"Ⓧ/./D/E/F"▸
+«}/∀»
+
+«∃(susi:‖"Ⓧ/./A/B/C"){»
+◂‖[susi]"Ⓧ/./D/E/F"▸
+«}/∃»
+
+⊏ locatortarget Troet = (Object troet, String troeter1, String troeter2) ⊐
+
+«∀(‖"Ⓧ/./A/B/C"){»
+◂‖"Ⓧ/./D/E/F"▸
+«}/∀»
+
+«∃(‖"Ⓧ/./A/B/C"){»
+◂‖"Ⓧ/./D/E/F"▸
+«}/∃»
+
+«∀(willy:‖"Ⓧ/./A/B/C"){»
+◂‖[willy]"Ⓧ/./D/E/F"▸
+«}/∀»
+
+«∃(susi:‖"Ⓧ/./A/B/C"){»
+◂‖[susi]"Ⓧ/./D/E/F"▸
+«}/∃»

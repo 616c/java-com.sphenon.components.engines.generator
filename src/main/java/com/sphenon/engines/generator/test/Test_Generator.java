@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.test;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -127,10 +127,12 @@ public class Test_Generator extends com.sphenon.basics.testing.classes.TestBase 
                 GeneratorOutputToString gots = (GeneratorOutputToString) generator_output_handler;
                 Vector<String> cns = gots.getChannelNames(context);
                 if (cns == null) {
-                    gots.getResult(context);
+                    String result = gots.getResult(context);
+                    if ((notification_level & Notifier.CHECKPOINT) != 0) { NotificationContext.sendCheckpoint(context, "Template: '%(template)' ==> '%(result)'", "template", generator_class, "result", result); }
                 } else {
                     for (String cn : cns) {
-                        gots.getResult(context, cn);
+                        String result = gots.getResult(context, cn);
+                        if ((notification_level & Notifier.CHECKPOINT) != 0) { NotificationContext.sendCheckpoint(context, "Template: '%(template)' ==> '%(result)'", "template", generator_class, "result", result); }
                     }
                 }
             }

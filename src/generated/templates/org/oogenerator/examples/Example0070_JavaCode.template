@@ -1,0 +1,16 @@
+G-2.0-plain_java-1.0
+⊰
+   This templates demonstrates how to embed Java code statements.
+
+   Like in the previous examples, it prints "Hello, world!"
+   (if invoked without an argument).
+⊱…
+⊏ signature(String my_arg = "world") ⊐…
+⊰
+   The characters '«' and '»' are used as delimimeters for arbitrary
+   Java code statements.
+⊱…
+« String greeting = "Hello, " + my_arg; »…
+
+    ◂greeting▸
+

@@ -1,0 +1,23 @@
+G-2.0-plain_java-1.0
+⊰
+   This templates allows to greet arbitrary planets (not just worlds).
+
+   It demonstrates the use of template arguments.
+
+   When invoked, this templated receives an argument named "my_arg".
+   E.g., if the actual invocation argument is "Mars", it creates the text
+   "Hello, Mars!"
+⊱
+⊏ signature(String my_arg) ⊐
+
+    Hello, ◂my_arg▸!
+
+⊰
+   Note the special characters "⊏" and "⊐" around the signature. These are
+   socalled "template code delimiters". The code inside them is processed by
+   the template parser, in contrast to java code inside "«" and "»". The
+   latter - Java code - is passed directly to the created intermediate Java
+   generator class.
+
+   It is useful to keep these different processing levels in mind.
+⊱

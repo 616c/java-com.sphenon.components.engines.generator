@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -81,6 +81,15 @@ public class JavaTemplateTraits_JavaTypes extends JavaTemplateTraits {
         "FilterType:^Factory_Filter<(short|int|long|float|double)>$=FilterByRange_$1_",
         "FilterType:^Factory_Filter<(Date|Short|Integer|Long|Float|Double)>$=FilterByRange_$1_",
         "FilterType:^Factory_Filter<(.*)>$=FilterByValue_$1_",
+        "FilterByExpression:^FilterByExpression<(String)>$=true",
+        "FilterByExpression:^FilterByExpression<(.*)>$=false",
+        "FilterByRange:^FilterByRange<(short|int|long|float|double)>$=true",
+        "FilterByRange:^FilterByRange<(Date|Short|Integer|Long|Float|Double)>$=true",
+        "FilterByRange:^FilterByRange<(.*)>$=false",
+        "FilterByValue:^FilterByValue<(String)>$=false",
+        "FilterByValue:^FilterByValue<(boolean|byte|char|short|int|long|float|double)>$=false",
+        "FilterByValue:^FilterByValue<(Date|Boolean|Byte|Character|Short|Integer|Long|Float|Double)>$=false",
+        "FilterByValue:^FilterByValue<(.*)>$=true",
         "FilterOptionalType:^Factory_Filter<(String)>$=FilterByExpression_Optional_$1_",
         "FilterOptionalType:^Factory_Filter<(boolean|byte|char)>$=FilterByValue_Optional_$1_",
         "FilterOptionalType:^Factory_Filter<(short|int|long|float|double)>$=FilterByRange_Optional_$1_",

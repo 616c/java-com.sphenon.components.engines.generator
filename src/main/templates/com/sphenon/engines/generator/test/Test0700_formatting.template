@@ -1,0 +1,61 @@
+G-2.0-java_jpp-1.0 -*- coding: utf-8; -*-
+
+◂⌾("%.2f",47.11)▸
+◂⌾("%.2f",47.1234)▸
+
+◂⌾("yyyy-MM-dd HH:mm:ss.SSS",new java.util.Date())▸
+
+◂⌾("¤:",47.11)▸
+◂⌾("¤:;/",47.11)▸
+◂⌾("¤:;/€",47.11)▸
+◂⌾("¤:;/!",47.11)▸
+◂⌾("¤:de-DE",47.11)▸
+◂⌾("¤:de-DE;/",47.11)▸
+◂⌾("¤:de-DE;/€",47.11)▸
+◂⌾("¤:de-DE;/!",47.11)▸
+◂⌾("¤:de-DE",471147.11)▸
+◂⌾("¤:de-DE;/",471147.11)▸
+◂⌾("¤:de-DE;/€",471147.11)▸
+◂⌾("¤:de-DE;/!",471147.11)▸
+◂⌾("¤:de-DE;//",471147.11)▸
+◂⌾("¤:de-DE;/€/",471147.11)▸
+◂⌾("¤:de-DE;/!/",471147.11)▸
+◂⌾("¤:de-DE;//*",471147.11)▸
+◂⌾("¤:de-DE;/€/*",471147.11)▸
+◂⌾("¤:de-DE;/!/*",471147.11)▸
+◂⌾("¤:de-DE;EUR/",47.11)▸
+◂⌾("¤:de-DE;EUR/€",47.11)▸
+◂⌾("¤:de-DE;EUR/!",47.11)▸
+◂⌾("¤:de-DE;USD/",47.11)▸
+◂⌾("¤:de-DE;USD/$",47.11)▸
+◂⌾("¤:de-DE;USD/!",47.11)▸
+◂⌾("¤:en-US",47.11)▸
+
+◂⌾("⬒:de-DE",new java.util.Date())▸
+◂⌾("⌚:de-DE",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE",new java.util.Date())▸
+◂⌾("⬒:de-DE;short",new java.util.Date())▸
+◂⌾("⌚:de-DE;short",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;short",new java.util.Date())▸
+◂⌾("⬒:de-DE;medium",new java.util.Date())▸
+◂⌾("⌚:de-DE;medium",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;medium",new java.util.Date())▸
+◂⌾("⬒:de-DE;long",new java.util.Date())▸
+◂⌾("⌚:de-DE;long",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;long",new java.util.Date())▸
+◂⌾("⬒:de-DE;full",new java.util.Date())▸
+◂⌾("⌚:de-DE;full",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;full",new java.util.Date())▸
+
+◂⌾("⬒:de-DE;long/CET",new java.util.Date())▸
+◂⌾("⌚:de-DE;long/CET",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;long/CET",new java.util.Date())▸
+◂⌾("⬒:de-DE;long/GMT+00:00",new java.util.Date())▸
+◂⌾("⌚:de-DE;long/GMT+00:00",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;long/GMT+00:00",new java.util.Date())▸
+◂⌾("⬒:de-DE;long/GMT+08:00",new java.util.Date())▸
+◂⌾("⌚:de-DE;long/GMT+08:00",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;long/GMT+08:00",new java.util.Date())▸
+◂⌾("⬒:de-DE;long/GMT-08:00",new java.util.Date())▸
+◂⌾("⌚:de-DE;long/GMT-08:00",new java.util.Date())▸
+◂⌾("⬒⌚:de-DE;long/GMT-08:00",new java.util.Date())▸

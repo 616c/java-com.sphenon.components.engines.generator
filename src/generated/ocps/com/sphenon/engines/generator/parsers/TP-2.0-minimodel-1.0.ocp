@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser BASE="com/sphenon/engines/generator/parsers/TP-2.0-files-1.0"
+        xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+  <modules>
+    <Module>com.sphenon.engines.generator.modules.JavaPP</Module>
+    <Module>com.sphenon.engines.generator.modules.FilesCommon</Module>
+    <Module>com.sphenon.engines.generator.modules.MiniModelFilesCommon</Module>
+    <Module>com.sphenon.engines.generator.modules.MiniModelFiles</Module>
+    <Module>com.sphenon.engines.generator.modules.FilesCommon2</Module>
+  </modules>
+</parser>

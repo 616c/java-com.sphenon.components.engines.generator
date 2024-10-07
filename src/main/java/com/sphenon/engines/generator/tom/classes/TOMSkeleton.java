@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.tom.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -178,6 +178,28 @@ public class TOMSkeleton extends Class_TOMNode {
         this.worklets.add(worklet);
     }
 
+    static public class TemplateProperty {
+        public TemplateProperty(String name, String value) {
+            this.name  = name;
+            this.value = value;
+        }
+        public String name;
+        public String value;
+    };
+
+    protected Vector<TemplateProperty> template_properties;
+
+    public Vector<TemplateProperty> getTemplateProperties(CallContext context) {
+        if (this.template_properties == null) {
+            this.template_properties = new Vector<TemplateProperty>();
+        }
+        return this.template_properties;
+    }
+
+    public void addTemplateProperty(CallContext context, String name, String value) {
+        this.getTemplateProperties(context).add(new TemplateProperty(name, value));
+    }
+
     // Internal -----------------------------------------------------------------------
 
     protected Map<String, Integer> sub_templates;
@@ -234,6 +256,7 @@ public class TOMSkeleton extends Class_TOMNode {
                 current_writer.append("import com.sphenon.basics.debug.RuntimeStepLocationContext;\n");
                 current_writer.append("import com.sphenon.basics.exception.*;\n");
                 current_writer.append("import com.sphenon.basics.notification.*;\n");
+                current_writer.append("import com.sphenon.basics.configuration.Configuration;\n");
                 current_writer.append("import com.sphenon.basics.message.*;\n");
                 current_writer.append("import com.sphenon.basics.customary.*;\n");
                 current_writer.append("import com.sphenon.basics.encoding.*;\n");
@@ -271,11 +294,15 @@ public class TOMSkeleton extends Class_TOMNode {
                                       + " {\n");
                 current_writer.append("\n");
                 current_writer.append("    static final public Class rtcfg_class = Generator.class;\n");
+                current_writer.append("    static final public Class _class = " + this.getRootNode(context).getTemplate(context).getClassName(context) + ".class;\n");
                 current_writer.append("\n");
                 current_writer.append("    static protected long runtimestep_level;\n");
                 current_writer.append("    static public    long adjustRuntimeStepLevel(long new_level) { long old_level = runtimestep_level; runtimestep_level = new_level; return old_level; }\n");
                 current_writer.append("    static public    long getRuntimeStepLevel() { return runtimestep_level; }\n");
                 current_writer.append("    static { runtimestep_level = RuntimeStepLocationContext.getLevel(rtcfg_class); };\n");
+                current_writer.append("\n");
+                current_writer.append("    static protected Configuration config;\n");
+                current_writer.append("    static { config = Configuration.create(RootContext.getInitialisationContext(), _class); };\n");
                 current_writer.append("\n");
                 current_writer.append("    /* Id ----------------------------------------------------------------------------- */\n");
                 current_writer.append("\n");

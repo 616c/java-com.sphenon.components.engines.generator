@@ -1,0 +1,40 @@
+G-2.0-inclusion_test-1.0
+⊰
+   Now that we know how the parser configuration works, and how a template
+   type selects a configuration, we can define our own template type.
+
+   Let's assume we want to make a value magically available in all our
+   templates of this new type:
+⊱…
+
+     The magic value is ◂magic_value▸ !
+
+⊰
+   First, we define a template type, in our example this is
+
+      G-2.0-inclusion_test-1.0
+
+   As we know now, this type points to a configuration in this OCP file
+
+     com/sphenon/engines/generator/parsers/TP-2.0-inclusion_test-1.0.ocp
+
+   This OCP file contains:
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <parser CLASS="TemplateParser" xmlns="http://xmlns.sphenon.com/com/sphenon/engines/generator">
+        <TOMParser>
+
+          ...
+
+          <IncludeModules>
+            <Module>com.sphenon.engines.generator.test.Example0150_ParserInclusion_MagicValueDefinition</Module>
+          </IncludeModules>
+        </TOMParser>
+      </parser>
+
+   This configuration specifies an include module Example0150_ParserInclusion_MagicValueDefinition.
+   Modules have the file extension ".template.module" to distinguish them from
+   normal templates. Syntactically, they are normal templates.
+
+   The next example shows the content of this module.
+⊱…

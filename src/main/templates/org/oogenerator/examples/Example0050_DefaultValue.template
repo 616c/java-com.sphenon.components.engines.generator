@@ -1,0 +1,12 @@
+G-2.0-plain_java-1.0
+⊰
+   This templates allows to greet arbitrary planets, but by default the world.
+
+   It demonstrates the use of default values for template arguments.
+
+   If invoked without an argument, it prints "Hello, world!".
+⊱
+⊏ signature(String my_arg = "world") ⊐
+
+    Hello, ◂my_arg▸!
+

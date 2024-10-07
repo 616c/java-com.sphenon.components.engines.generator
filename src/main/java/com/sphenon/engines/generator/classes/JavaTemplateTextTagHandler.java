@@ -1,7 +1,7 @@
 package com.sphenon.engines.generator.classes;
 
 /****************************************************************************
-  Copyright 2001-2018 Sphenon GmbH
+  Copyright 2001-2024 Sphenon GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy
@@ -55,7 +55,7 @@ public class JavaTemplateTextTagHandler implements TagHandler {
             BufferedReader buffered_reader = new BufferedReader(string_reader);
             ascii_source_handler.handle(context, TCEvent.TEMPLATE_SOURCE, current_node, buffered_reader);
         }
-         return current_node;
+        return current_node;
     }
 
     public TOMNode handleTagEnd(CallContext context, TCEvent event, TOMNode current_node, String tag_name, Vector<String> arguments, TCHandler ascii_source_handler, StringBuffer out) throws InvalidTemplateSyntax {
