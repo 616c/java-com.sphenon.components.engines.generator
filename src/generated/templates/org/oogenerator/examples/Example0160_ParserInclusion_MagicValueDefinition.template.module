@@ -1,0 +1,7 @@
+G-2.0-plain_java-1.0
+⊰
+   As described in the previous example, Example0150_ParserInclusion, this is
+   a template module. In our example, it defines a magic value, which is now
+   available in all our templates of the newly introduced template type.
+⊱…
+« int magic_value = 42; »…
