@@ -1,0 +1,11 @@
+G-2.0-plain_java-1.0
+⊏ signature(String zip_file) ⊐…
+«
+FileOutputStream output_stream;
+try {
+    output_stream = new FileOutputStream(zip_file);
+} catch (IOException ioe) {
+    CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Generator could not open file '%(file)'", "file", zip_file);
+    throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+}
+»…

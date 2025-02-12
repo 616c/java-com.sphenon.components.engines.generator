@@ -55,6 +55,24 @@ public class TOMJTTIdentifier extends Class_TOMNode {
 
     // --------------------------------------------------------------------------------
 
+    static public boolean isIdentifier(CallContext context, String identifier, TOMNode current_node) {
+        TOMSkeleton skeleton = current_node.findSuperNode(context, TOMSkeleton.class, null, false, true);
+        if (    skeleton == null
+             || skeleton.getSignature(context) == null
+             || skeleton.getSignature(context).getFormalArguments(context) == null
+           ) {
+            return false;
+        }
+        int i=0;
+        for (FormalArgument fa : skeleton.getSignature(context).getFormalArguments(context)) {
+            if (i >= 2 && fa.getArgumentName(context).equals(identifier)) {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
     public void createJavaCode(CallContext context, Section section, JavaCodeManager java_code_manager, BufferedWriter current_writer, String indent) {
 
         try {
@@ -63,16 +81,7 @@ public class TOMJTTIdentifier extends Class_TOMNode {
                     gom_id          = this.getRootNode(context).getNextGOMId(context);
                     local_gom_index = this.getRootNode(context).getNextLocalGOMIndex(context);
 
-                    this.is_argument = false;
-                    TOMSkeleton skeleton = this.findSuperNode(context, TOMSkeleton.class, null);
-                    int i=0;
-                    for (FormalArgument fa : skeleton.getSignature(context).getFormalArguments(context)) {
-                        if (i >= 2 && fa.getArgumentName(context).equals(identifier)) {
-                            this.is_argument = true;
-                            break;
-                        }
-                        i++;
-                    }
+                    this.is_argument = isIdentifier(context, this.identifier, this);
                     break;
                 case GOM_BUILDER_SECTION:
                     if (this.is_argument) {

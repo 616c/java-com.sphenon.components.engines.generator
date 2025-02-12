@@ -1,0 +1,42 @@
+G-2.0-plain_java-1.0
+⊏ signature(String root = "", String property_file = "") ⊐…
+⊏ name("Service") ⊐…
+⊰ ✏
+  <docl:Description Audience="User">
+    <para>
+      java_imports: first one must be the model package of the project, this
+      enables use of a foreignly defined model; followed by other third party
+      imports; colon separated
+    </para>
+  </docl:Description>
+⊱…
+▲
+protected Properties properties;
+protected String service_id;
+protected String service_name;
+protected String model_string;
+protected String modules;
+protected String java_imports;
+protected String maven_imports;
+▲…
+«
+this.rootf = new File(root);
+this.properties = FileUtilities.loadPropertiesFrom(context, property_file);
+
+this.service_id    = property("ServiceId", "", "myservice");
+this.service_name  = property("ServiceName", "", "MyService");
+this.model_string  = property("Model", "", "[Person:person:Personen:personen|Id:id:String:PK;Vorname:vorname:String:I18N;Nachname:nachname:String:I18N|B-C-R-U-D][Adress:address:Addresses:addresses|Id:id:String:PK;Strasse:strasse:String;Ort:ort:String|B-C-R-U-D]");
+this.modules       = property("Modules", "", "service-interface:repository-mock:repository-orientdb:jms-server:jms-client:rest-server");
+this.java_imports  = property("JavaImports", "", "com.lhsystems.infotainment.myservice.business.control.model.*");
+this.maven_imports = property("MavenImports", "", "");
+
+this.service_id_cb = recode_LCD_LCU_MC_CB(context, service_id);
+this.model = parseModel(model_string, this.service_id_cb, properties);
+
+Vector<String[]>                 classes          = model.classes;
+Vector<Vector<String[]>>         class_attributes = model.class_attributes;
+Vector<String>                   class_operations = model.class_operations;
+Vector<Vector<Vector<String[]>>> class_signatures = model.class_signatures;
+
+passMainArguments(context, service_id, service_name, model_string, modules, java_imports, maven_imports, properties, model.classes, model.class_attributes, model.class_operations, model.class_signatures);
+»…

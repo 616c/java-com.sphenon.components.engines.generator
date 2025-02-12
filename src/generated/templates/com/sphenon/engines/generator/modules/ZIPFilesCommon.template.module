@@ -1,0 +1,103 @@
+G-2.0-plain_java-1.0
+⊰
+
+  Files - generation of whole file trees
+
+⊱…
+▼
+import java.io.*;
+import java.nio.channels.*;
+import java.util.zip.*;
+import com.sphenon.basics.graph.*;
+import com.sphenon.basics.graph.factories.*;
+import com.sphenon.engines.generator.*;
+▼…
+▲
+    protected void rebuildNodes(CallContext context) {
+        currentnode = rootnode;
+        for (String e : source_stack) {
+            currentnode = currentnode.tryGetChild(context, e);
+        }
+    }
+    protected void rebuildPathes(CallContext context) {
+        target_path = "";
+        for (String e : target_stack) {
+            target_path += (target_path.length() == 0 ? "" : "/") + e;
+        }
+    }
+    protected void pushSourceId(CallContext context, String id) {
+        source_stack.push(id);
+        rebuildNodes(context);
+    }
+    protected void popSourceId(CallContext context) {
+        source_stack.pop();
+        rebuildNodes(context);
+    }
+    protected void pushTargetId(CallContext context, String id) {
+        target_stack.push(id);
+        rebuildPathes(context);
+    }
+    protected void popTargetId(CallContext context) {
+        target_stack.pop();
+        rebuildPathes(context);
+    }
+    protected File createFile(CallContext context, Object... arguments) {
+        try {
+            this.zos.putNextEntry(new ZipEntry(target_path));
+            if (currentnode.getId(context).matches(".*\\.template")) {
+                // generate
+                Generator generator = GeneratorRegistry.get(context).getGenerator(context, (TreeLeaf) currentnode);
+                OutputStreamWriter osw = new OutputStreamWriter(this.zos, "UTF-8");
+                generator.generate(context, new GeneratorOutputToWriter(context, osw, false), arguments);
+                osw.flush();            
+            } else {
+                // copy
+                InputStream is = null;
+                is = ((Data_MediaObject)(((NodeContent_Data)(((TreeLeaf)currentnode).getContent(context))).getData(context))).getStream(context);
+                byte[] buf = new byte[4096];
+                int bread;
+                while ((bread = is.read(buf, 0, 4096)) != -1) {
+                    this.zos.write(buf, 0, bread);
+                }
+                is.close();
+            }
+            this.zos.closeEntry();
+        } catch (IOException ioe) {
+            CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Generator could not create zip entry '%(enry)'", "entry", target_path);
+            throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+        }
+        return null;
+    }
+    protected File createFolder(CallContext context) {
+        // target_path
+        return null;
+    }
+    protected void passArguments(CallContext context, Object... additional_arguments) {
+        this.local_arguments = new Object[main_arguments.length+additional_arguments.length];
+        int i=0;
+        for (Object a : main_arguments      ) { local_arguments[i++] = a; }
+        for (Object a : additional_arguments) { local_arguments[i++] = a; }
+    }
+    protected void passMainArguments(CallContext context, Object... additional_arguments) {
+        this.local_arguments = new Object[main_arguments.length+additional_arguments.length];
+        int i=0;
+        for (Object a : main_arguments      ) { local_arguments[i++] = a; }
+        for (Object a : additional_arguments) { local_arguments[i++] = a; }
+        this.main_arguments = this.local_arguments;
+    }
+    protected java.util.Stack<String> source_stack;
+    protected java.util.Stack<String> target_stack;
+    protected String source_path;
+    protected String target_path;
+    protected ZipOutputStream zos;
+    protected TreeNode rootnode;
+    protected TreeNode currentnode;
+    protected Object[] main_arguments;
+    protected Object[] local_arguments;
+▲…
+«
+this.source_stack = new java.util.Stack<String>();
+this.target_stack = new java.util.Stack<String>();
+this.main_arguments = arguments;
+this.local_arguments = arguments;
+»…

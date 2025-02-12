@@ -41,6 +41,7 @@ public interface TOMNode {
     public<NodeClass extends TOMNode> NodeClass findSuperNode      (CallContext context, Class<NodeClass> node_class);
     public<NodeClass extends TOMNode> NodeClass findSuperNode      (CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition);
     public<NodeClass extends TOMNode> NodeClass findSuperNode      (CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition, boolean mandatory);
+    public<NodeClass extends TOMNode> NodeClass findSuperNode      (CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition, boolean mandatory, boolean include_me_myself);
 
     public<NodeClass extends TOMNode> NodeClass findPreceedingNode (CallContext context, Class<NodeClass> node_class);
     public<NodeClass extends TOMNode> NodeClass findPreceedingNode (CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition);

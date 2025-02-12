@@ -84,14 +84,23 @@ abstract public class Class_TOMNode implements TOMNode, Dumpable {
     }
 
     public<NodeClass extends TOMNode> NodeClass findSuperNode(CallContext context, Class<NodeClass> node_class) {
-        return findSuperNode(context, node_class, new TOMConditionTrue());
+        return findSuperNode(context, node_class, null, false, false);
     }
 
     public<NodeClass extends TOMNode> NodeClass findSuperNode(CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition) {
-        return findSuperNode(context, node_class, tom_condition, false);
+        return findSuperNode(context, node_class, tom_condition, false, false);
     }
 
     public<NodeClass extends TOMNode> NodeClass findSuperNode(CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition, boolean mandatory) {
+        return findSuperNode(context, node_class, tom_condition, mandatory, false);
+    }
+
+    public<NodeClass extends TOMNode> NodeClass findSuperNode(CallContext context, Class<NodeClass> node_class, TOMCondition tom_condition, boolean mandatory, boolean include_me_myself) {
+        if (    include_me_myself
+             && node_class.isAssignableFrom(this.getClass())
+             && (tom_condition == null || tom_condition.test(context, this))) {
+            return (NodeClass) this;
+        }
         TOMNode parent = this.getParentNode(context);
         if (parent != null) {
             if (    node_class.isAssignableFrom(parent.getClass())

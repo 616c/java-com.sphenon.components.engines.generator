@@ -1,0 +1,14 @@
+G-2.0-plain_java-1.0
+⊰
+
+  Java Template Text Pre Processor Module Definitions
+
+⊱…
+⋖ * = com.sphenon.engines.generator.classes.JavaTemplateTextTagHandler ⋗…
+package ◂_JAVA_PACKAGE▸;
+
+« if (_JAVA_IMPORTS != null && _JAVA_IMPORTS.size() != 0) {
+    for (String java_import : _JAVA_IMPORTS) { »…
+import ◂java_import▸;
+«   }
+  } »…

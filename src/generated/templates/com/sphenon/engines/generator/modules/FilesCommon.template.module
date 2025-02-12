@@ -1,0 +1,151 @@
+G-2.0-plain_java-1.0
+⊰
+
+  Files - generation of whole file trees
+
+⊱…
+▼
+import java.io.*;
+import java.nio.channels.*;
+import com.sphenon.basics.graph.*;
+import com.sphenon.basics.graph.factories.*;
+import com.sphenon.engines.generator.*;
+import com.sphenon.basics.system.StringUtilities;
+▼…
+▲
+    protected void rebuildNodes(CallContext context) {
+        currentnode = rootnode;
+        for (String e : source_stack) {
+            currentnode = currentnode.tryGetChild(context, e);
+        }
+    }
+    protected void rebuildPathes(CallContext context) {
+        target_path = "";
+        for (String e : target_stack) {
+            target_path += (target_path.length() == 0 ? "" : "/") + e;
+        }
+    }
+    protected void pushSourceStack(CallContext context) {
+        source_stack_stack.push(source_stack);
+        source_stack = new java.util.Stack<String>();
+    }
+    protected void popSourceStack(CallContext context) {
+        source_stack = source_stack_stack.pop();
+    }
+    protected void pushSourceId(CallContext context, String id) {
+        source_stack.push(id);
+        rebuildNodes(context);
+    }
+    protected void popSourceId(CallContext context) {
+        source_stack.pop();
+        rebuildNodes(context);
+    }
+    protected void pushTargetId(CallContext context, String id) {
+        target_stack.push(id);
+        rebuildPathes(context);
+    }
+    protected void popTargetId(CallContext context) {
+        target_stack.pop();
+        rebuildPathes(context);
+    }
+    protected File createFile(CallContext context, Object... arguments) {
+        File targetf = new File(rootf, target_path);
+        if (targetf.exists()) {
+            // System.err.println("EXISTS: " + targetf.getPath());
+        } else {
+            if (currentnode.getId(context).matches(".*\\.template")) {
+                // generate
+                Generator generator = GeneratorRegistry.get(context).getGenerator(context, (TreeLeaf) currentnode);
+                generator.generate(context, new GeneratorOutputToFile(context, targetf), arguments);
+            } else {
+                // copy
+                InputStream is = null;
+                OutputStream os = null;
+                try {
+                    is = ((Data_MediaObject)(((NodeContent_Data)(((TreeLeaf)currentnode).getContent(context))).getData(context))).getStream(context);
+                    os = new FileOutputStream(targetf);
+                    byte[] buf = new byte[4096];
+                    int bread;
+                    while ((bread = is.read(buf, 0, 4096)) != -1) {
+                        os.write(buf, 0, bread);
+                    }
+                    is.close();
+                    os.close();
+                } catch (IOException ioe) {
+                    CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Could not copy file");
+                    throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+                }
+            }
+        }
+        return targetf;
+    }
+    protected File createFolder(CallContext context) {
+        File targetf = new File(rootf, target_path);
+        targetf.mkdirs();
+        return targetf;
+    }
+    protected File createSymbolicLink(CallContext context, String symlink_target, boolean remove_extension) {
+        File targetf = new File(rootf, remove_extension ? target_path.replaceFirst(".SYMBOLIC_LINK$", "") : target_path);
+        try {
+            java.nio.file.Files.createSymbolicLink(targetf.toPath(), (new File(symlink_target)).toPath());
+        } catch (IOException ioe) {
+            CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Could not create symbolic link from '%(source)' to '%(target)'", "source", target_path, "target", symlink_target);
+            throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+        }
+        return targetf;
+    }
+    protected void setPermissions(CallContext context, File file, String permissions) {
+        if (file != null) { 
+            try {
+                java.nio.file.Files.setPosixFilePermissions(file.toPath(), java.nio.file.attribute.PosixFilePermissions.fromString(permissions));
+            } catch (IOException ioe) {
+                CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Could not set file permissions for '%(file)'", "file", file.getPath());
+                throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+            }
+        }
+    }
+    protected void passArguments(CallContext context, Object... additional_arguments) {
+        this.local_arguments = new Object[main_arguments.length+additional_arguments.length];
+        int i=0;
+        for (Object a : main_arguments      ) { local_arguments[i++] = a; }
+        for (Object a : additional_arguments) { local_arguments[i++] = a; }
+    }
+    protected void passNamedArguments(CallContext context, Object... additional_named_arguments) {
+        java.util.Map<String,Object> more = new java.util.HashMap<String,Object>();
+        if (additional_named_arguments != null) {
+            for (int i=0; i<additional_named_arguments.length; i+=2) {
+                more.put((String) additional_named_arguments[i], additional_named_arguments[i+1]);
+            }
+        }
+        passArguments(context, more);
+    }
+    protected void passMainArguments(CallContext context, Object... additional_arguments) {
+        this.local_arguments = new Object[main_arguments.length+additional_arguments.length];
+        int i=0;
+        for (Object a : main_arguments      ) { local_arguments[i++] = a; }
+        for (Object a : additional_arguments) { local_arguments[i++] = a; }
+        this.main_arguments = this.local_arguments;
+    }
+    protected void passLocalArguments(CallContext context, Object... arguments) {
+        this.local_arguments = new Object[arguments.length];
+        int i=0;
+        for (Object a : arguments           ) { local_arguments[i++] = a; }
+    }
+    protected java.util.Stack<String> source_stack;
+    protected java.util.Stack<java.util.Stack<String>> source_stack_stack;
+    protected java.util.Stack<String> target_stack;
+    protected String source_path;
+    protected String target_path;
+    protected File rootf;
+    protected TreeNode rootnode;
+    protected TreeNode currentnode;
+    protected Object[] main_arguments;
+    protected Object[] local_arguments;
+▲…
+«
+this.source_stack = new java.util.Stack<String>();
+this.source_stack_stack = new java.util.Stack<java.util.Stack<String>>();
+this.target_stack = new java.util.Stack<String>();
+this.main_arguments = arguments;
+this.local_arguments = arguments;
+»…

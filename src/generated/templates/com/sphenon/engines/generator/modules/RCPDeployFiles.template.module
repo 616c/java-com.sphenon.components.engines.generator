@@ -1,0 +1,25 @@
+G-2.0-java_jpp-1.0
+▼ import com.sphenon.assemblies.emos.EMOSApplicationOptions; ▼…
+⊏ signature(String _root, String _plugin_version, String _product_name, String _display_target, String _eclipse_build_target, String _config_name) ⊐…
+«
+    String root = _root;
+    String version = _plugin_version;
+    String product_name = _product_name;
+    String display_target = _display_target;
+    String configuration_name = _config_name;
+    String eclipse_build_target = _eclipse_build_target;
+    java.util.List<String> filelist = new java.util.ArrayList();
+    java.io.File path = new java.io.File(root+"/plugins/rcp/lib");
+    String[] files = path.list( new java.io.FilenameFilter(){
+        public boolean accept(java.io.File dir, String name) {
+        String match_jar = ".*\\.jar";
+        if( name.matches(match_jar)){
+          return true;
+        }
+        return false;
+      }
+    });
+    for( String _file : files ){
+      filelist.add(_file);
+    }
+»…

@@ -1,0 +1,41 @@
+G-2.0-plain_java-1.0
+⊰
+
+  Java Pre Processor (JavaPP) Module Definitions
+
+⊱…
+⊏ locatortarget XML = (XMLNode xml_node) ⊐…
+⊏ locatortarget JSON = (JSONNode json_node) ⊐…
+⊏ locatortarget Object = (Object object) ⊐…
+▼…
+import com.sphenon.basics.locating.Locator;
+import com.sphenon.basics.locating.returncodes.InvalidLocator;
+import com.sphenon.basics.expression.Expression;
+import com.sphenon.basics.expression.returncodes.EvaluationFailure;
+import com.sphenon.basics.xml.XMLNode;
+import com.sphenon.basics.xml.XMLNodeIterable;
+import com.sphenon.basics.xml.XMLNodeExistenceCheck;
+import com.sphenon.formats.json.JSONNode;
+import com.sphenon.formats.json.JSONNodeIterable;
+import com.sphenon.formats.json.JSONNodeExistenceCheck;
+import com.sphenon.basics.many.ObjectIterable;
+import com.sphenon.basics.many.ObjectExistenceCheck;
+▼…
+▲…
+protected Object resolveLocator(CallContext context, String text_locator, Object object) {
+    try {
+        return (Locator.createLocator(context, text_locator).retrieveTarget(context, object));
+    } catch (InvalidLocator il) {
+        CustomaryContext.create((Context)context).throwConfigurationError(context, il, "During generation, an invalid locator '%(locator)' was found in template '%(generatorid)'", "locator", text_locator, "generatorid", this.getId(context));
+        throw (ExceptionConfigurationError) null; // compiler insists
+    }
+}
+protected Object evaluateExpression(CallContext context, String expression, Object... arguments) {
+    try {
+        return Expression.evaluate(context, expression, null, arguments);
+    } catch (EvaluationFailure ef) {
+        CustomaryContext.create((Context)context).throwConfigurationError(context, ef, "During generation, an invalid expression '%(expression)' was found in template '%(generatorid)'", "expression", expression, "generatorid", this.getId(context));
+        throw (ExceptionConfigurationError) null; // compiler insists
+    }
+}
+▲…

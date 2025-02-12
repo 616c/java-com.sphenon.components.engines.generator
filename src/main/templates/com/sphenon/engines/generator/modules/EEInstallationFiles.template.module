@@ -1,0 +1,23 @@
+G-2.0-plain_java-1.0
+▼ import com.sphenon.assemblies.emos.EMOSApplicationOptions; ▼…
+▼ import com.sphenon.assemblies.emos.EMOSInstallationOptions; ▼…
+▼ import com.sphenon.basics.encoding.*; ▼…
+⊏ signature(EMOSApplicationOptions application_options, EMOSInstallationOptions installation_options) ⊐…
+«
+    EMOSApplicationOptions  ao = application_options;
+    EMOSInstallationOptions io = installation_options;
+    Object[] options = new Object[2];
+    options[0] = application_options;
+    options[1] = installation_options;
+    object = options;
+
+    String root            = installation_options.getDockerProjectRoot(context);
+    String projectid       = application_options.getProjectId(context);
+    String javapackage     = application_options.getJavaPackage(context);
+    String javapackagepath = application_options.getJavaPackagePath(context);
+    String packagedotted   = javapackage;
+    String packagepath     = javapackagepath;
+    String hostname        = installation_options.getTomcatHostName(context);
+    String contextxml      = installation_options.getWebAppContextXML(context);
+    String subdomain       = Encoding.recode(context, application_options.getProjectId(context), Encoding.UTF8, Encoding.SUBDOMAIN);
+»…

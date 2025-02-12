@@ -1,0 +1,12 @@
+G-2.0-plain_java-1.0
+«
+try {
+    this.zos.finish();
+    this.zos.flush();
+    this.zos.close();
+    output_stream.close();
+} catch (IOException ioe) {
+    CustomaryContext.create((Context)context).throwEnvironmentError(context, ioe, "Generator could not close zip stream");
+    throw (ExceptionEnvironmentError) null; // inane, but compiler insists
+}
+»…

@@ -1,0 +1,298 @@
+G-2.0-plain_java-1.0
+▼
+import com.sphenon.basics.system.*;
+import com.sphenon.basics.expression.*;
+import com.sphenon.formats.json.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.*;
+▼…
+▲
+public class Model {
+    public Model() {
+        this.classes = new Vector<String[]>();
+        this.class_attributes = new Vector<Vector<String[]>>();
+        this.class_operations = new Vector<String>();
+        this.class_signatures = new Vector<Vector<Vector<String[]>>>();
+    }
+    public String id;
+    public Vector<String[]> classes;
+    public Vector<Vector<String[]>> class_attributes;
+    public Vector<String> class_operations;
+    public Vector<Vector<Vector<String[]>>> class_signatures;
+    public Properties properties;
+}
+protected Model model;
+protected Vector<Model> models;
+protected Set<String> jimports = new HashSet<String>();
+protected boolean got_bases = false;
+protected String service_id_cb;
+protected String[] matches = null;
+protected String value(String value, String prefix) { return ((value.isEmpty() || value.charAt(0) != '@') ? value : property(value.substring(1), prefix, "")); }
+protected String valuePP(String value, String prefix, String vprefix, String vpostfix) { String result = ((value.isEmpty() || value.charAt(0) != '@') ? value : property(value.substring(1), prefix, "")); return (result == null || result.isEmpty() ? "" : (vprefix + result + vpostfix));}
+protected String property(String key, String prefix, String default_value) { return property(properties, key, prefix, default_value, false); }
+protected String property(String key, String prefix, String default_value, boolean required) { return property(properties, key, prefix, default_value, required); }
+protected String property(Properties properties, String key, String prefix, String default_value) { return property(properties, key, prefix, default_value, false); }
+protected String property(Properties properties, String key, String prefix, String default_value, boolean required) { String result = null; if (properties != null) { result = properties.getProperty(prefix + key); if (result == null) { result = properties.getProperty(key); } } if (result == null && required) { System.err.println("undefined property: " + prefix + key); } return result != null ? result : default_value; }
+protected boolean isTrue(String value, String prefix) { String result = value(value, prefix); return (result != null && result.equals("true") ? true : false); }
+protected boolean nonEmpty(String value, String prefix) { String result = value(value, prefix); return (result != null && result.isEmpty() == false ? true : false); }
+protected String ifNonEmpty(String pkey, String pprefix, String prefix, String postfix) { return ifNonEmpty(pkey, pprefix, prefix, postfix, false); }
+protected String ifNonEmpty(String pkey, String pprefix, String prefix, String postfix, boolean required) { if (pkey == null) { return ""; } String pvalue = property(pkey, pprefix, ""); if (pvalue != null && pvalue.isEmpty() == false) { return prefix + pvalue + postfix; } else { if (required) { System.err.println("undefined property: " + pprefix + pkey); } return ""; } }
+protected boolean contains(String property, String value) { return contains(property, value, property_category); }
+protected boolean contains(String property, String value, String wherein) { if (property == null) { return false; } matches = new RegularExpression(".*\\b" + value + "(:?" + wherein + ")?\\b.*").tryGetMatches(null, property); return matches != null; }
+// protected boolean inModel(String property, String value) { return (contains(property, value) || ! contains(property, "EM|(?:T[0-9]+)")); }
+protected String getBaseIfAppliesToModule(String string) { if (string == null || string.isEmpty()) { return null; } String[] parts = string.split("~", 2); if (parts.length < 2 || parts[1].matches(".*\\b(:?" + module_id + ")\\b.*")) { return parts[0]; } else return null; }
+protected String ifAppliesToModule(String string, String prefix, String postfix) { String base = getBaseIfAppliesToModule(string); if (base != null) { return prefix + base + postfix; } else return ""; }
+protected String tmap(String string) { String tm = property("TypeNameMapping", "transport.", null); if (tm == null || tm.isEmpty()) { return string; } else { String[] re = tm.split("#"); return string.replaceAll(re[0], re[1]); } }
+protected String nullValue(String type) { if (type.matches("short|Short|int|Integer|long|Long")) { return "0"; } if (type.matches("float|Float|double|Double")) { return "0.0"; } return "null"; }
+protected String recode_LCD_LCU_MC_CB(CallContext context, String string) { return Encoding.recode(context, Encoding.recode(context, Encoding.recode(context, string, Encoding.LCD, Encoding.LCU), Encoding.LCU, Encoding.MC), Encoding.MC, Encoding.CB); }
+protected boolean strictness(int level) { return (t.i(property("Strictness","CodeCompliance.","0")) >= level) ? true : false; }
+protected Vector<String> getMatchingImports(String module_id) {
+    return getMatchingImports(module_id, null);
+}
+protected Vector<String> getMatchingImports(String module_id, String file_id) {
+    Vector<String> imports = new Vector<String>();
+    for (String jimport : java_imports.split(":")) {
+        if (jimport != null && jimport.isEmpty() == false && jimport.equals("-") == false) {
+            String[] jip = jimport.split("#");
+            String minc = jip.length <= 1 ? null : jip[1];
+            String mexc = jip.length <= 2 ? null : jip[2];
+            String finc = jip.length <= 3 ? null : jip[3];
+            String fexc = jip.length <= 4 ? null : jip[4];
+            List<String> mincl = minc == null || minc.isEmpty() ? null : Arrays.asList(minc.split(","));
+            List<String> mexcl = mexc == null || mexc.isEmpty() ? null : Arrays.asList(mexc.split(","));
+            List<String> fincl = finc == null || finc.isEmpty() ? null : Arrays.asList(finc.split(","));
+            List<String> fexcl = fexc == null || fexc.isEmpty() ? null : Arrays.asList(fexc.split(","));
+            if (    (mincl == null || mincl.contains(module_id))
+                 && (mexcl == null || ! mexcl.contains(module_id))
+                 && (    file_id == null
+                      || (    (fincl == null || fincl.contains(file_id))
+                           && (fexcl == null || ! fexcl.contains(file_id))
+                         )
+                    )
+               ) {
+                imports.add(jip[0]);
+            }
+        }
+    }
+    return imports;
+}
+protected void addMatchingModuleFileImports(String module_id, String file_id) {
+    for (String jimport : getMatchingImports(module_id, file_id)) {
+        jimports.add(jimport);
+    }
+}
+protected void addBaseClassImports(String[] cls) {
+    if (cls.length > 4) {
+        for (String fullbase : cls[4].split("\\+")) {
+            String base = getBaseIfAppliesToModule(fullbase);
+            if (base != null) {
+                got_bases = true;
+                String mioc = getModelIDOfClass(base);
+                if (mioc != null) {
+                    jimports.add("com.lhsystems.velimo." + mioc + ".business.entity." + base);
+                }
+            }
+        }
+    }
+}
+protected void addTypeImport(String type) {
+    for (String part : type.split("[<,>]")) {
+        if (part.isEmpty() == false) {
+            addClassImport(part);
+        }
+    }
+}
+protected void addClassImport(String[] cls) {
+    addClassImport(cls[0]);
+}
+protected void addClassImport(String cls) {
+    String mioc = getModelIDOfClass(cls);
+    if (mioc != null) {
+        jimports.add("com.lhsystems.velimo." + mioc + ".business.entity." + cls);
+    }
+}
+protected void addClassImports(String[] cls) {
+    for (String jimport : property(cls[0] + ".imports", "entity-model.POJO.", "").split(",")) {
+        if (jimport.isEmpty() == false) {
+            jimports.add(jimport);
+        }
+    }
+}
+protected void addMemberImports(Vector<String[]> attributes) {
+    for (int a=0; a<attributes.size(); a++) {
+        if (contains(attributes.get(a)[3], "EM") == false) { continue; }
+        if (contains(attributes.get(a)[3], "CA")) { continue; }
+        addTypeImport(attributes.get(a)[2]);
+    }
+}
+protected void addArgumentImports(String module_id, String[] cls, String operations, Vector<String[]> attributes, Vector<Vector<String[]>> signatures) {
+    for (int a=0; a<attributes.size(); a++) {
+        boolean use = false;
+        if (use == false) {
+            if (operations.matches(".*\\bF(:?repository)?\\b.*")) {
+                for (String findmethod : property(cls[0] + ".findMethods", module_id + ".", "0:").split(",")) {
+                    String[] fm = findmethod.split(":",-2); String fi = fm[0]; String fn = fm[1]; boolean fc = fi.equals("0"); String fnsep = fn.isEmpty() ? "" : (" " + fn);
+                    if (contains(attributes.get(a)[3], "EM") == false) { continue; }
+                    if (contains(attributes.get(a)[3], "F"+fi) == false) { continue; }
+                    use = true;
+                    break;
+                }
+            }
+        }
+        if (use == false) {
+            if (operations.matches(".*\\bC(:?repository)?\\b.*")) {
+                if (    contains(attributes.get(a)[3], "EM") == true
+                     && contains(attributes.get(a)[3], "CA") == false) {
+                    use = true;
+                }
+            }
+        }
+        if (use == false) {
+            if (operations.matches(".*\\bR(:?repository)?\\b.*")) {
+                if (    contains(attributes.get(a)[3], "EM")
+                     && contains(attributes.get(a)[3], "PK")
+                   ) {
+                    use = true;
+                }
+            }
+        }
+        if (use == false) {
+            if (operations.matches(".*\\bU(:?repository)?\\b.*")) {
+                if (    contains(attributes.get(a)[3], "EM")
+                     && (    contains(attributes.get(a)[3], "CA") == false
+                          || contains(attributes.get(a)[3], "PK")
+                        )
+                   ) {
+                    use = true;
+                }
+            }
+        }
+        if (use == false) {
+            if (operations.matches(".*\\bD(:?repository)?\\b.*")) {
+                if (    contains(attributes.get(a)[3], "EM")
+                     && contains(attributes.get(a)[3], "PK")
+                   ) {
+                    use = true;
+                }
+            }
+        }
+        if (use) {
+            addTypeImport(attributes.get(a)[2]);
+        }
+        if (use == false) {
+            for (int s=0; s<signatures.size(); s++) {
+                if (contains(signatures.get(s).get(0)[5], "I", module_id)) {
+                addTypeImport(signatures.get(s).get(0)[0]);
+                for (int p=1; p<signatures.get(s).size(); p++) {
+                    if (contains(signatures.get(s).get(p)[4], "I", module_id) == false && contains(signatures.get(s).get(p)[4], "I", "[a-z0-9-]+")) { continue; }
+                        addTypeImport(signatures.get(s).get(p)[2]);
+                    }
+                }
+            }
+        }
+    }
+}
+protected void addJavaImports(String... jis) {
+    for (String jimport : jis) {
+        jimports.add(jimport);
+    }
+}
+protected List<String> getJavaImports() {
+    List<String> list = new ArrayList<String>(jimports);
+    java.util.Collections.sort(list);
+    return list;
+}
+protected JsonNode parseJSON(String json) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+        return mapper.readTree(json);
+    } catch (java.io.IOException ioe) {
+        ioe.printStackTrace();
+        return null;
+    }
+}
+protected Vector<Model> getModels() {
+    if (this.models == null) {
+        this.models = new Vector<Model>();
+        this.models.add(this.model);
+        for (String im : property("ImportedModels", "", "").split(",")) {
+            if (im.isEmpty()) { continue; }
+            String[] imp = im.split(":");
+            if (imp[1].equals("file")) {
+                String pfile = property_file.replaceFirst("[^/]+/?$","") + imp[2];
+                Properties p = FileUtilities.loadPropertiesFrom(com.sphenon.basics.context.classes.RootContext.getFallbackCallContext(), pfile);
+                String im_string = p.getProperty("Model");
+                Model imodel = parseModel(im_string, imp[0], p);
+                this.models.add(imodel);
+            } else if (imp[1].equals("property")) {
+                String im_string = property(imp[2], "ImportedModel.", "");
+                Model imodel = parseModel(im_string, imp[0], properties);
+                this.models.add(imodel);
+            }
+        }
+    }
+    return this.models;
+}
+protected int[] getBaseClassIndices(String[] cls) {
+    if (cls.length > 4) {
+        for (String base : cls[4].split("\\+")) {
+            if ( ! base.isEmpty()) {
+                int midx = 0;
+                for (Model m : this.getModels()) {
+                    for(int c=0; c<m.classes.size(); c++){
+                        if (base.equals(m.classes.get(c)[0])) {
+                            return new int[] { midx, c };
+                        }
+                    }
+                    midx++;
+                }                
+            }
+        }
+    }
+    return null;
+}
+protected Model parseModel(String model_string, String model_id, Properties properties) {
+    model_string = model_string.replaceFirst("^\"","").replaceFirst("\"$","");
+    Model model = new Model();
+    model.id = model_id;
+    model.properties = properties;
+    for (String cls : model_string.split("[\\[\\]]+",-1)) {
+        if (cls.matches("^[ \n\r\t]*$")) { continue; }
+        String[] comps = (cls + "|-|-|-").split("\\|",-1);
+        model.classes.add(comps[0].split(":",-1));
+        Vector<String[]> attributes = new Vector<String[]>();
+        model.class_attributes.add(attributes);
+        for (String att : comps[1].split(";",-1)) {
+            if (att.equals("-") == false) {
+                if (att.matches("^[ \n\r\t]*$")) { continue; }
+                attributes.add((att+":-:-").split(":",-1));
+            }
+        }
+        model.class_operations.add(comps[2]);
+        Vector<Vector<String[]>> signatures = new Vector<Vector<String[]>>();
+        model.class_signatures.add(signatures);
+        if (comps[3] != null && comps[3].isEmpty() == false && comps[3].equals("-") == false) {
+            for (String sig : comps[3].split("/",-1)) {
+                Vector<String[]> signature = new Vector<String[]>();
+                signatures.add(signature);
+                for (String sp : sig.split("[;()]",-1)) {
+                    if (sp.matches("^[ \n\r\t]*$")) { continue; }
+                    signature.add((sp+":-:-:-:-:-:-").split(":",-1)); 
+                }
+            }
+        }
+    }
+    return model;
+}
+protected String getModelIDOfClass(String name) {
+    for (Model model : getModels()) {
+        for (String[] c : model.classes) {
+            if (name.equals(c[0])) { return model.id; }
+        }
+    }
+    return null;
+}
+▲…

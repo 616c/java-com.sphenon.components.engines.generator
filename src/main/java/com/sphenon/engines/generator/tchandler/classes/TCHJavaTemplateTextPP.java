@@ -30,6 +30,8 @@ import com.sphenon.engines.generator.returncodes.*;
 
 import java.io.StringReader;
 import java.io.BufferedReader;
+import java.io.CharArrayWriter;
+import java.io.CharArrayReader;
 import java.io.IOException;
 
 import java.util.Stack;
@@ -81,17 +83,35 @@ public class TCHJavaTemplateTextPP implements TCHandler {
         return current_node;
     }
 
-    public TOMNode handlePlainText(CallContext context, TCEvent event, TOMNode current_node, String text) throws InvalidTemplateSyntax {
+    protected CharArrayWriter caw;
+
+    protected void appendToTextBuffer(CallContext context, String text) {
         if (text != null && text.length() > 0) {
-            StringReader string_reader = new StringReader(text);
-            BufferedReader buffered_reader = new BufferedReader(string_reader);
+            if (this.caw == null) {
+                this.caw = new CharArrayWriter();
+            }
+            this.caw.append(text);
+        }
+    }
+
+    public TOMNode flushTextBuffer(CallContext context, TCEvent event, TOMNode current_node) throws InvalidTemplateSyntax {
+        if (this.caw != null && this.caw.size() > 0) {
+            CharArrayReader car = new CharArrayReader(this.caw.toCharArray());
+            this.caw = null;
+            BufferedReader buffered_reader = new BufferedReader(car);
             current_node = this.text_handler.handle(context, event, current_node, buffered_reader);
         }
         return current_node;
     }
 
+    public TOMNode handlePlainText(CallContext context, TCEvent event, TOMNode current_node, String text) throws InvalidTemplateSyntax {
+        this.appendToTextBuffer(context, text);
+        return current_node;
+    }
+
     public TOMNode handleCode(CallContext context, TCEvent event, TOMNode current_node, String code) throws InvalidTemplateSyntax {
         if (code != null && code.length() > 0) {
+            current_node = flushTextBuffer(context, event, current_node);
             new TOMJavaExpression(context, current_node, code);
         }
         return current_node;
@@ -99,19 +119,27 @@ public class TCHJavaTemplateTextPP implements TCHandler {
 
     public TOMNode handleIdentifier(CallContext context, TCEvent event, TOMNode current_node, String identifier) throws InvalidTemplateSyntax {
         if (identifier != null && identifier.length() > 0) {
-            new TOMJTTIdentifier(context, current_node, identifier);
+            if (TOMJTTIdentifier.isIdentifier(context, identifier, current_node)) {
+                current_node = flushTextBuffer(context, event, current_node);
+                new TOMJTTIdentifier(context, current_node, identifier);
+            } else {
+                this.appendToTextBuffer(context, identifier);
+            }
         }
         return current_node;
     }
 
     public TOMNode handleJavaTemplateExpression(CallContext context, TCEvent event, TOMNode current_node, JTENodeArgumentList list) throws InvalidTemplateSyntax {
         if (list != null && list.getArguments(context) != null && list.getArguments(context).size() > 0) {
+            current_node = flushTextBuffer(context, event, current_node);
             new TOMJTTTemplateExpression(context, current_node, list);
         }
         return current_node;
     }
 
     public TOMNode handleJavaTemplateDeclaration(CallContext context, TCEvent event, TOMNode current_node, JTENodeArgumentList list) throws InvalidTemplateSyntax {
+        current_node = flushTextBuffer(context, event, current_node);
+
         Vector<TCodeArgument> signature = new Vector<TCodeArgument>();
         signature.add(new TCodeArgument(context, "_JAVA_PACKAGE", "String", null));
         signature.add(new TCodeArgument(context, "_JAVA_IMPORTS", "java.util.Vector<String>", null));
@@ -125,6 +153,7 @@ public class TCHJavaTemplateTextPP implements TCHandler {
     }
 
     public TOMNode handleJavaTemplateRequirement(CallContext context, TCEvent event, TOMNode current_node, String template_name, JTENodeArgumentList list) throws InvalidTemplateSyntax {
+        current_node = flushTextBuffer(context, event, current_node);
 
         new TOMJTTTemplateRequirement(context, current_node, template_name, list);
         return current_node;

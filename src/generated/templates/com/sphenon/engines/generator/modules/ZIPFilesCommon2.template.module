@@ -1,0 +1,6 @@
+G-2.0-plain_java-1.0
+«
+this.zos = new ZipOutputStream(output_stream);
+this.zos.setMethod(ZipOutputStream.DEFLATED);
+this.zos.setLevel(1);
+»…

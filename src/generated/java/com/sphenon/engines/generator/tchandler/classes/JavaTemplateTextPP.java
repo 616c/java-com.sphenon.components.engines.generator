@@ -953,6 +953,7 @@ public class JavaTemplateTextPP implements JavaTemplateTextPPConstants {
       }
     }
     jj_consume_token(0);
+    current_node = tch.flushTextBuffer(context, event, current_node);
     {if (true) return current_node;}
     throw new Error("Missing return statement in function");
   }
@@ -1098,6 +1099,7 @@ public class JavaTemplateTextPP implements JavaTemplateTextPPConstants {
       ;
     }
     jj_consume_token(0);
+    current_node = tch.flushTextBuffer(context, event, current_node);
     {if (true) return current_node;}
     throw new Error("Missing return statement in function");
   }
